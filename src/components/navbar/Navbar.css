@@ -1,0 +1,52 @@
+/* Navbar.css */
+.branding {
+    background-color: #333;
+    color: white;
+  }
+  
+  .navmenu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+  }
+  
+  .navmenu ul li {
+    margin-right: 20px;
+  }
+  
+  .navmenu ul li a {
+    color: white;
+    text-decoration: none;
+  }
+  
+  .navmenu .dropdown ul {
+    display: none;
+    position: absolute;
+    background-color: #333;
+    padding: 10px;
+  }
+  
+  .navmenu .dropdown:hover ul {
+    display: block;
+  }
+  
+  .navmenu .dropdown .dropdown {
+    position: relative;
+  }
+  
+  .navmenu .dropdown .dropdown ul {
+    left: 100%;
+    top: 0;
+  }
+  
+  .logo {
+    text-decoration: none;
+    color: white;
+  }
+  
+  .sitename {
+    margin-right: 5px;
+  }
+  
