@@ -1,96 +1,22 @@
-// import { createSlice } from "@reduxjs/toolkit";
-// import { getAllUsers } from "../../actions/adminActions";
-
-// const adminSlice = createSlice({
-//     name: "adminSlice",
-//     initialState:{
-
-//         users: null as any,
-//         error: null as string | null,
-//         loading: false as boolean,
-//     },
-//     reducers: {
-//       makeErrorDisable: (state) => {
-//         state.error = null;
-//       },
-//     },
-//     extraReducers: (builder) => {
-//       builder
-//         .addCase(getAllUsers.pending, (state) => {
-//           state.loading = true;
-//           state.error = null;
-//         })
-//         .addCase(getAllUsers.fulfilled, (state, action) => {
-//           state.users = action.payload.users;
-//           state.loading = false;
-//           state.error = null; // Reset error on success if necessary
-//         })
-//         .addCase(getAllUsers.rejected, (state, action) => {
-//           state.error = action.error.message as string;
-//           state.loading = false;
-//         });
-//     },
-//   });
-
-// export const {makeErrorDisable} = adminSlice.actions;
-// export default adminSlice.reducer
-
-
-
-
-// import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-// import { getAllUsers } from "../../actions/adminActions";
-
-// interface AdminState {
-//   users: any[] | null;
-//   error: string | null;
-//   loading: boolean;
-// }
-
-// const initialState: AdminState = {
-//   users: null,
-//   error: null,
-//   loading: false,
-// };
-
-// const adminSlice = createSlice({
-//   name: "adminSlice",
-//   initialState,
-//   reducers: {
-//     makeErrorDisable: (state) => {
-//       state.error = null;
-//     },
-//   },
-//   extraReducers: (builder) => {
-//     builder
-//       .addCase(getAllUsers.pending, (state) => {
-//         state.loading = true;
-//         state.error = null;
-//       })
-//       .addCase(getAllUsers.fulfilled, (state, action: PayloadAction<any>) => {
-//         state.users = action.payload.data.users; // Assuming payload structure has 'data.users'
-//         state.loading = false;
-//         state.error = null;
-//       })
-//       .addCase(getAllUsers.rejected, (state, action) => {
-//         state.error = action.payload as string // Handle error message
-//         state.loading = false;
-//       });
-//   },
-// });
-
-// export const { makeErrorDisable } = adminSlice.actions;
-// export default adminSlice.reducer;
-
-
 
 import { createSlice } from "@reduxjs/toolkit";
-import { getAllUsers,getAllHosts ,getHostDetails,getAllCategories,addCategory,updateCategoryStatus} from "../../actions/adminActions";
+import { getAllUsers,
+      getAllHosts ,
+      getHostDetails,
+      getAllCategories,
+      addCategory,
+      updateCategoryStatus,
+      updateHostStatus,
+      updateUserStatus
+      } from "../../actions/adminActions";
 
 interface Category {
   _id: string;
   name: string;
   isBlocked: boolean;
+  error: string | null;
+  loading: boolean;
+  
 }
 
 const adminSlice : any = createSlice({
@@ -98,7 +24,7 @@ const adminSlice : any = createSlice({
   initialState: {
     categories: [] as Category[],
     hostDetails: null,
-    users: null as any,
+    users: [] as any[],
     error: null as string | null,
     loading: false as boolean,
   },
@@ -176,6 +102,29 @@ const adminSlice : any = createSlice({
         state.categories[index] = action.payload;
       }
     })
+   
+    .addCase(updateHostStatus.pending, (state) => {
+      state.loading = true;
+    })
+    .addCase(updateHostStatus.fulfilled, (state, action) => {
+      state.loading = false;
+      if (state.users) {
+        const updatedUsers = state.users.map((user: any) => {
+          if (user._id === action.payload._id) {
+            return { ...user, status: action.payload.status };
+          }
+          return user;
+        });
+        state.users = updatedUsers;
+      }
+    })
+    .addCase(updateHostStatus.rejected, (state, action) => {
+      state.loading = false;
+      state.error = 'Failed to update host status';
+    })
+    
+     
+
     
     
   }

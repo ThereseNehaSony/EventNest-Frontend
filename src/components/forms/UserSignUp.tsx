@@ -19,12 +19,7 @@ interface CustomJwtPayload {
   email: string;
 }
 
-// interface UserValues {
-//   username: string;
-//   email: string;
-//   password: string;
-//   confirmPassword: string;
-// }
+
 interface UserValues {
   username: string;
   email: string;
@@ -60,23 +55,16 @@ function UserSignupForm() {
       const { confirmPassword, ...restValues } = values;
       const response = await dispatch(userSignup(restValues));
       console.log(response, 'response ----')
-      // if (response) {
-      //   setIsOTP(true); 
-      //   action.resetForm();
-      //   setTempData(restValues); 
-      // }
-      // if(response.meta.requestStatus !== "rejected") {
-      //   navigate('/')
-      // }
+    
       if (response && response.meta.requestStatus !== 'rejected') {
         setIsOTP(true); 
         action.resetForm();
         setTempData(restValues); 
       } else {
-        // Handle specific error scenario where user is already registered
+        
         if (error) {
-          toast.error(error); // Show error message
-          // Optionally, reset form fields or handle other UI updates
+          toast.error(error); 
+         
         }
       }
     },
@@ -136,7 +124,7 @@ function UserSignupForm() {
                           value={values.username}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          // required
+                          
                         />
                         {errors.username && touched.username && (
                           <p className="text-red-500 text-sm">{errors.username}</p>
@@ -153,7 +141,7 @@ function UserSignupForm() {
                           value={values.email}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          // required
+                          
                         />
                         {errors.email && touched.email && (
                           <p className="text-red-500 text-sm">{errors.email}</p>
@@ -170,7 +158,7 @@ function UserSignupForm() {
                           value={values.password}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          // required
+                          
                         />
                         <span
                           onClick={togglePasswordVisibility}
@@ -193,7 +181,7 @@ function UserSignupForm() {
                           value={values.confirmPassword}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          // required
+                         
                         />
                         <span
                           onClick={toggleConfirmPasswordVisibility}
@@ -239,7 +227,8 @@ function UserSignupForm() {
         </div>
       </div>
     </section>
-  );
+  )
+
 }
 
 export default UserSignupForm;

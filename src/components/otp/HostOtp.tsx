@@ -112,16 +112,7 @@ function OtpVerification({ userData }: { userData: TempData }) {
     console.log(joinedOtp, '----------');
     userData.otp = joinedOtp;
     const response = await dispatch(userSignup(userData));
-    // navigate('/');
-    // if (response && response.meta.requestStatus !== 'rejected') {
-    //   navigate('/');
-    // } else {
-    //   // Handle specific error scenario where user is already registered
-    //   if (error) {
-    //     toast.error(error); // Show error message
-    //     // Optionally, reset form fields or handle other UI updates
-    //   }
-    // }
+   
     if (response && response.meta.requestStatus !== 'rejected') {
      
         navigate('/host/home');

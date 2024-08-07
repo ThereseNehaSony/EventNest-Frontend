@@ -1,10 +1,9 @@
 import React from 'react';
-// import banner from '../../assets/1649082499105.png';
-// import img1 from'../../assets/event1.jpeg'
+
 import { Link } from 'react-router-dom';
 
 
-const banner ='/bg-1.jpg' ;
+const banner ='/bg-7.jpg' ;
 const img1 = '/bg-1.jpg'; 
 
 interface CardProps {
@@ -12,33 +11,33 @@ interface CardProps {
   name: string;
 }
 
-const Card: React.FC<CardProps> = ({ image, name }) => {
-  return (
-    <div className="flex-1 p-4">
-    <div className="max-w-sm mx-auto bg-white rounded-xl shadow-md overflow-hidden">
-      <div className="h-40 bg-cover bg-center" style={{ backgroundImage: `url(${image})` }}></div>
-      <div className="p-6 flex flex-col items-center"> 
-        <h2 className="text-lg font-bold text-center">{name}</h2>
-      </div>
-    </div>
-    </div>
-  );
-};
+// const Card: React.FC<CardProps> = ({ image, name }) => {
+//   return (
+//     <div className="flex-1 p-4">
+//     <div className="max-w-sm mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+//       <div className="h-40 bg-cover bg-center" style={{ backgroundImage: `url(${image})` }}></div>
+//       <div className="p-6 flex flex-col items-center"> 
+//         <h2 className="text-lg font-bold text-center">{name}</h2>
+//       </div>
+//     </div>
+//     </div>
+//   );
+// };
 
-interface ThreeCardComponentProps {
-    img1: string;
-}
+// interface ThreeCardComponentProps {
+//     img1: string;
+// }
 
-const ThreeCardComponent: React.FC<ThreeCardComponentProps> = ({ img1 }) => {
-  return (
-    <div className="flex justify-center mx-auto space-x-8 max-w-screen-lg">
-      <Card image={img1} name="Music" />
-      <Card image={img1} name="Performances" />
-      <Card image={img1} name="Experiences" />
+// const ThreeCardComponent: React.FC<ThreeCardComponentProps> = ({ img1 }) => {
+//   return (
+//     <div className="flex justify-center mx-auto space-x-8 max-w-screen-lg">
+//       <Card image={img1} name="Music" />
+//       <Card image={img1} name="Performances" />
+//       <Card image={img1} name="Experiences" />
       
-    </div>
-  );
-};
+//     </div>
+//   );
+// };
 
 const EventHome: React.FC = () => {
   return (
@@ -52,8 +51,8 @@ const EventHome: React.FC = () => {
           Discover the endless possibilities of what you can host with us."</p>
       </div>
       <br/>
-      <ThreeCardComponent img1={img1} />
-      <ThreeCardComponent img1={img1} />
+      {/* <ThreeCardComponent img1={img1} />
+      <ThreeCardComponent img1={img1} /> */}
 
       <div className="flex justify-center mt-8">
       <Link to="/host/login" className="block py-2 px-4 hover:text-gray-400">
@@ -74,3 +73,4 @@ const EventHome: React.FC = () => {
 };
 
 export default EventHome
+

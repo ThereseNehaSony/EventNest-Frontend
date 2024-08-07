@@ -14,6 +14,7 @@ export const config ={
     credentials: 'include'
 };
 
+
 export const handleError = (
     error: AxiosError<ApiError>,
     rejectWithValue: (value: string | unknown) => string | unknown

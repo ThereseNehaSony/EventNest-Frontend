@@ -1,10 +1,7 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { IUserSelector,IHostSelector } from '../../interface/IUserSlice';
+import { IUserSelector, IHostSelector } from '../../interface/IUserSlice';
 import { updateHostProfile } from '../../redux/actions/hostActions';
-
 import { AppDispatch } from '../../redux/store';
 import { clearSuccess } from '../../redux/reducers/host/hostSlice';
 
@@ -12,16 +9,15 @@ const HostProfile: React.FC = () => {
   const user = useSelector((state: IUserSelector) => state.user?.user);
   const id = useSelector((state: IUserSelector) => state.user?.user?._id);
   const data = useSelector((state: IHostSelector) => state.host?.userDetails);
-  const success = useSelector((state: any) => state.user.success); 
+  const success = useSelector((state: any) => state.host.success); // Ensure you're accessing the correct state for success
 
   const [profileDetails, setProfileDetails] = useState({
-    phone: data?.phone || '',
-    address: data?.address || '',
-    aadharNumber: data?.aadharNumber || '',
-    bankAccountNumber: data?.bankAccountNumber || '',
+    phone: '',
+    address: '',
+    aadharNumber: '',
+    bankAccountNumber: '',
   });
-  
-  //validation errors
+
   const [errors, setErrors] = useState({
     phone: '',
     address: '',
@@ -31,6 +27,18 @@ const HostProfile: React.FC = () => {
 
   const dispatch = useDispatch<AppDispatch>();
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
+  // Update profile details when data changes
+  useEffect(() => {
+    if (data) {
+      setProfileDetails({
+        phone: data.phone || '',
+        address: data.address || '',
+        aadharNumber: data.aadharNumber || '',
+        bankAccountNumber: data.bankAccountNumber || '',
+      });
+    }
+  }, [data]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProfileDetails({
@@ -43,16 +51,14 @@ const HostProfile: React.FC = () => {
     });
   };
 
-  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate form inputs
     let isValid = true;
     const newErrors = { ...errors };
 
-    if (!profileDetails.phone.trim() || profileDetails.phone.length !== 10 || /^0+$/.test(profileDetails.phone)) {
-      newErrors.phone = 'Phone number must be 10 digits and cannot be all zeros';
+    if (!profileDetails.phone.trim() || profileDetails.phone.length !== 10 || !/^\d+$/.test(profileDetails.phone) || profileDetails.phone.startsWith('0')) {
+      newErrors.phone = 'Phone number must be 10 digits, not start with 0, and not be all zeros';
       isValid = false;
     }
 
@@ -61,13 +67,13 @@ const HostProfile: React.FC = () => {
       isValid = false;
     }
 
-    if (!profileDetails.aadharNumber.trim() || profileDetails.aadharNumber.length !== 12) {
-      newErrors.aadharNumber = 'Aadhar number must be 12 digits';
+    if (!profileDetails.aadharNumber.trim() || profileDetails.aadharNumber.length !== 12 || !/^\d+$/.test(profileDetails.aadharNumber) || /^0+$/.test(profileDetails.aadharNumber)) {
+      newErrors.aadharNumber = 'Aadhar number must be 12 digits and cannot be all zeros';
       isValid = false;
     }
 
-    if (!profileDetails.bankAccountNumber.trim() || profileDetails.bankAccountNumber.length !== 16) {
-      newErrors.bankAccountNumber = 'Bank account number must be 16 digits';
+    if (!profileDetails.bankAccountNumber.trim() || profileDetails.bankAccountNumber.length < 9 || profileDetails.bankAccountNumber.length > 18 || !/^\d+$/.test(profileDetails.bankAccountNumber) || /^0+$/.test(profileDetails.bankAccountNumber)) {
+      newErrors.bankAccountNumber = 'Bank account number must be between 9 and 18 digits, numeric only, and cannot be all zeros';
       isValid = false;
     }
 
@@ -77,6 +83,7 @@ const HostProfile: React.FC = () => {
       dispatch(updateHostProfile({ id, ...profileDetails }));
     }
   };
+
   useEffect(() => {
     if (success) {
       setShowSuccessMessage(true);
@@ -89,8 +96,6 @@ const HostProfile: React.FC = () => {
 
   return (
     <div className="flex h-screen">
-     
-
       <main className="flex-1 p-6 bg-gray-100">
         <div className="container mx-auto">
           <div className="bg-white shadow rounded-lg p-4 md:p-8">

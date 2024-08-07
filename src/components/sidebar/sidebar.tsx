@@ -3,7 +3,7 @@ import React from 'react';
 import { Link,useNavigate } from 'react-router-dom';
 import { FiHome, FiUsers, FiAlignCenter , FiCast  } from 'react-icons/fi';
 import { IoIosPeople } from "react-icons/io";
-import { MdPayment } from "react-icons/md";
+import { MdPayment,MdLogout  } from "react-icons/md";
 import { useSelector, useDispatch } from 'react-redux';
 import { AppDispatch } from '../../redux/store';
 // import logo from '../../assets/eventnest logo.webp'
@@ -63,16 +63,14 @@ const Sidebar = () => {
               Payments
             </Link>
           </li>
-          {/* <li className="my-2">
-           
-          <Link to="/admin/logout"  onClick={handleLogout} className="flex items-center py-2 px-4 rounded-lg hover:bg-gray-700">
-              <MdPayment className="w-6 h-6 mr-2" />
-              Logout
-            </Link> */}
-            <li>
-                  <button  onClick={handleLogout} className="flex items-center py-2 px-4 rounded-lg hover:bg-gray-700">Logout</button>
-                </li>
-          {/* </li> */}
+          
+          <li>
+            <button onClick={handleLogout} className="flex items-center py-2 px-4 rounded-lg hover:bg-gray-700">
+            <MdLogout className="w-6 h-6 mr-2" />
+             Logout
+           </button>
+          </li>
+        
          
         </ul>
       </nav>

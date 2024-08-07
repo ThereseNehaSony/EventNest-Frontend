@@ -13,7 +13,7 @@ const Sidebar: React.FC = () => {
             </li>
             
             <li>
-              <Link to="/changepassword" className="block py-2 px-4 hover:text-gray-400">Change Password</Link>
+              <Link to="/change-password" className="block py-2 px-4 hover:text-gray-400">Change Password</Link>
             </li>
             <li>
               <Link to="/wallet" className="block py-2 px-4 hover:text-gray-400">Wallet</Link>

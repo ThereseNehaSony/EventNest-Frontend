@@ -11,15 +11,14 @@ const validationSchema = yup.object({
   name: yup.string()
   .required('Category name is required')
   .matches(/^[a-zA-Z\s]+$/, 'Category name should only contain letters and spaces'),
-  // image: yup.mixed().required('Category image is required')
 });
 
 const AdminCategoryManagement = () => {
   const [open, setOpen] = useState(false);
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<{ id: string; status: boolean }>({ id: '', status: false });
-  // const [imagePreview, setImagePreview] = useState<string | ArrayBuffer | null>(null);
   const dispatch = useDispatch<AppDispatch>();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { categories, loading, error } = useSelector((state: any) => state.admin);
 
   useEffect(() => {
@@ -31,32 +30,23 @@ const AdminCategoryManagement = () => {
 
   const formik = useFormik({
     initialValues: {
-      name: '',
-      // image: null
+      name: ''
     },
     validationSchema,
     onSubmit: async (values) => {
       const formData = new FormData();
       formData.append('name', values.name);
-      // if (values.image) {
-      //   formData.append('image', values.image);
-      // }
-      await dispatch(addCategory(formData));
-      handleClose();
+      try {
+        await dispatch(addCategory(formData));
+        handleClose();
+        setErrorMessage(null); // Clear error message on successful submission
+      } catch (error: any) {
+        setErrorMessage(error.message); // Set error message if there's an error
+      }
     }
   });
 
-  // const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   if (event.currentTarget.files) {
-  //     const file = event.currentTarget.files[0];
-  //     formik.setFieldValue('image', file);
-  //     const reader = new FileReader();
-  //     reader.onloadend = () => {
-  //       setImagePreview(reader.result);
-  //     };
-  //     reader.readAsDataURL(file);
-  //   }
-  // };
+
 
   const handleStatusChange = (id: string, isBlocked: boolean) => {
     setSelectedCategory({ id, status: !isBlocked });
@@ -70,7 +60,7 @@ const AdminCategoryManagement = () => {
 
   return (
     <div className="flex h-screen">
-      <Sidebar /> {/* Include your sidebar component here */}
+      <Sidebar /> 
       <div className="flex-1 p-4 ml-64">
         <Button variant="contained" color="primary" onClick={handleOpen}>
           Add Category
@@ -84,24 +74,15 @@ const AdminCategoryManagement = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>Name</TableCell>
-                  {/* <TableCell>Image</TableCell> */}
                   <TableCell>Status</TableCell>
                   <TableCell>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {categories.map((category: any) => (
+                {categories?.map((category: any) => (
                   <TableRow key={category._id}>
                     <TableCell>{category.name}</TableCell>
-                    {/* <TableCell>
-                      {category.image && (
-                        <img
-                          src={category.image}
-                          alt={category.name}
-                          style={{ width: '100px', height: '100px', borderRadius: '8px' }}
-                        />
-                      )}
-                    </TableCell> */}
+                    
                     <TableCell>{category.isBlocked ? 'Blocked' : 'Active'}</TableCell>
                     <TableCell>
                       <Button
@@ -136,17 +117,11 @@ const AdminCategoryManagement = () => {
                 helperText={formik.touched.name && formik.errors.name}
                 margin="normal"
               />
-              {/* <input
-                id="image"
-                name="image"
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-              />
-              {imagePreview && <img src={imagePreview as string} alt="Preview" style={{ width: '100px', height: '100px' }} />} */}
+             
               <Button color="primary" variant="contained" type="submit" className="mt-2">
                 Add Category
               </Button>
+              {errorMessage && <Typography color="error">{errorMessage}</Typography>}
             </form>
           </div>
         </Modal>
@@ -173,3 +148,4 @@ const AdminCategoryManagement = () => {
 
 
 export default AdminCategoryManagement;
+

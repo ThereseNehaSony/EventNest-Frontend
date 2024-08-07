@@ -1,56 +1,3 @@
-// import { createSlice } from '@reduxjs/toolkit';
-// import { userSignup } from '../../actions/userActions';
-// import { IUserSignupData } from '../../../interface/IUserSignup';
-
-// const userSlice = createSlice({
-//   name: 'userSlice',
-//   initialState: {
-//     user: null as IUserSignupData | null,
-//     error: null as string | null,
-//     loading: false as boolean,
-    
-//   },
-//   reducers: {
-//     makeErrorDisable: (state) => {
-//       state.error = null;
-//     }
-//   },
-//   extraReducers: (builder) => {
-//     builder
-//       .addCase(userSignup.pending, (state) => {
-//         state.loading = true;
-//         state.error = null;
-//       })
-//       .addCase(userSignup.fulfilled, (state, action: any) => {
-//         state.loading = false;
-//         state.user = action.payload as IUserSignupData;
-//         state.error = null;
-//       })
-//       .addCase(userSignup.rejected, (state, action) => {
-//         state.loading = false;
-//         state.error = action.payload as string;
-//       })
-//       // .addCase(userLogin.pending, (state) => {
-//       //   state.loading = true;
-//       //   state.error = null;
-//       // })
-//       // .addCase(userLogin.fulfilled, (state, action: any) => {
-//       //   state.loading = false;
-//       //   state.user = action.payload as IUserSignupData;
-//       //   state.error = null;
-//       // })
-//       // .addCase(userLogin.rejected, (state, action) => {
-//       //   state.loading = false;
-//       //   state.error = action.payload as string;
-//       // });
-//   },
-// });
-
-// export const { makeErrorDisable } = userSlice.actions;
-// export default userSlice.reducer;
-
-// userSlice.ts
-
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IUserSignupData } from '../../../interface/IUserSignup';
@@ -94,6 +41,9 @@ const userSlice = createSlice({
     makeErrorDisable: (state) => {
       state.error = null;
     },
+    clearError(state) {
+      state.error = null;
+    },
     clearSuccess(state) { 
       state.success = false;
     },
@@ -112,6 +62,9 @@ const userSlice = createSlice({
       .addCase(userSignup.rejected, (state, action: PayloadAction<any>) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(clearError, (state) => {
+        state.error = null; 
       })
       .addCase(userLogin.fulfilled, (state, action: any) => {
         state.loading = false;
@@ -164,36 +117,6 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      // .addCase(userForgotPassword.pending, (state) => {
-      //   state.loading = true;
-      // })
-      // .addCase(userForgotPassword.fulfilled, (state) => {
-      //   state.loading = false;
-      // })
-      // .addCase(userForgotPassword.rejected, (state, action) => {
-      //   state.loading = false;
-      //   state.error = action.payload as string;
-      // })
-      // .addCase(verifyOtp.pending, (state) => {
-      //   state.loading = true;
-      // })
-      // .addCase(verifyOtp.fulfilled, (state) => {
-      //   state.loading = false;
-      // })
-      // .addCase(verifyOtp.rejected, (state, action) => {
-      //   state.loading = false;
-      //   state.error = action.payload as string;
-      // })
-      // .addCase(resetPassword.pending, (state) => {
-      //   state.loading = true;
-      // })
-      // .addCase(resetPassword.fulfilled, (state) => {
-      //   state.loading = false;
-      // })
-      // .addCase(resetPassword.rejected, (state, action) => {
-      //   state.loading = false;
-      //   state.error = action.payload as string;
-      // })
       .addCase(fetchAdditionalUserDetails.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -206,9 +129,22 @@ const userSlice = createSlice({
       .addCase(fetchAdditionalUserDetails.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-      });
+      })
+      .addCase(sendOtp.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(sendOtp.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload as string;
+        state.error = null;
+      })
+      .addCase(sendOtp.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
   },
 });
 
-export const { makeErrorDisable, clearSuccess, updateUserSuccess, updateUserFailure } = userSlice.actions;
+export const { makeErrorDisable, clearSuccess, updateUserSuccess, updateUserFailure,clearError } = userSlice.actions;
 export default userSlice.reducer;

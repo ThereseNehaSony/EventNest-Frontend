@@ -1,39 +1,3 @@
-// import { createAsyncThunk } from "@reduxjs/toolkit";
-// import { IUserSignupData } from "../../interface/IUserSignup";
-// import { IUserLogin } from "../../interface/IUserLogin";
-// import { baseUrl } from "../../config/constants";
-// import { handleError,config, ApiError } from "../../config/configuration";
-// import axios,{ AxiosError } from "axios";
-// import { reduxRequest } from "../../config/api";
-
-
-// export const userSignup = createAsyncThunk(
-//   'user/userSignup',
-//   async (userCredentials: IUserSignupData, { rejectWithValue }) => {
-    
-//     try {
-//       console.log("Reached in userSignup reducer");
-//       const {data} = await axios.post(`${baseUrl}/auth/signup`, userCredentials,config);
-//       console.log("data go")
-//       return data.user;
-//     } catch (err: any) {
-//       const axiosError = err as AxiosError<ApiError>;
-//       return handleError(axiosError, rejectWithValue);
-//     }
-//   }
-// );
-
-// export const userLogin = createAsyncThunk('user/userLogin',async (userCredentials: IUserLogin, {rejectWithValue}) => {
-//   try {
-//       console.log("reached in userLogin reducer")
-//       const {data} = await axios.post(`${baseUrl}/auth/login`,userCredentials,config)
-//       return data.user
-//   } catch (error: any) {
-//       const axiosError = error as AxiosError<ApiError>;
-//       return handleError(axiosError, rejectWithValue);
-//   }
-// })
-
 
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { IUserSignupData } from "../../interface/IUserSignup";
@@ -41,7 +5,11 @@ import { IUserLogin } from "../../interface/IUserLogin";
 import { baseUrl } from "../../config/constants";
 import axios, { AxiosError } from "axios";
 import { handleError, config, ApiError } from "../../config/configuration";
+import { api } from "../../config/api";
 
+import { createAction } from '@reduxjs/toolkit';
+export const CLEAR_ERROR = 'CLEAR_ERROR';
+export const clearError = createAction(CLEAR_ERROR);
 
 export const userSignup = createAsyncThunk(
   'user/userSignup',
@@ -50,7 +18,7 @@ export const userSignup = createAsyncThunk(
       console.log(userCredentials, 'userCredentials before sending');
       const { data } = await axios.post(`${baseUrl}/auth/signup`, userCredentials, config);
       
-      console.log(data, 'response data'); // Log response data
+      console.log(data, 'response data'); 
       return data.user;
     } catch (err: any) {
       const axiosError = err as AxiosError<ApiError>;
@@ -123,18 +91,7 @@ export const logout = createAsyncThunk("user/logout", async () => {
   }
 })
  
-export const sendOtp = createAsyncThunk('user/sendOtp',
-  async (email:string,{rejectWithValue})=>{
-    try {
-      console.log("otp sending......")
-      const {data} = await axios.post(`${baseUrl}/auth/send-otp`,{email},config);
-       return data.message
-    } catch (error:any) {
-      const axiosError = error as AxiosError<ApiError>
-      return rejectWithValue(axiosError.response?.data.message || error.message)
-    }
-  }
-)
+
 
 export const userForgotPassword = createAsyncThunk(
   'user/forgotPassword',
@@ -150,7 +107,6 @@ export const userForgotPassword = createAsyncThunk(
   
 );
 
-// Action to verify OTP
 export const verifyOtp = createAsyncThunk(
   'user/verifyOtp',
   async ({ email, otp }: { email: string; otp: string }, {rejectWithValue}) => {
@@ -164,7 +120,7 @@ export const verifyOtp = createAsyncThunk(
   }
 );
 
-// Action to reset password
+
 export const resetPassword = createAsyncThunk(
   'user/resetPassword',
   async ({ password, token }: { password: string; token: string }, {rejectWithValue}) => {
@@ -177,3 +133,27 @@ export const resetPassword = createAsyncThunk(
     }
   }
 );
+
+export const sendOtp = createAsyncThunk(
+  'user/sendOtp',
+  async (email: string, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.post(`${baseUrl}/auth/send-otp`, { email }, config);
+      return data.message;
+    } catch (error: any) {
+      const axiosError = error as AxiosError<ApiError>;
+      return rejectWithValue(axiosError.response?.data.message || error.message);
+    }
+  }
+);
+
+export const changePassword = async (newPassword: string) => {
+  console.log('sendidng to backend......')
+  const response = await api.post(`${baseUrl}/auth/change-password`, {
+    newPassword,
+  }, {
+    withCredentials: true, 
+  });
+  return response.data;
+};
+

@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-// import loginImage from '../../assets/loginImage2.jpg'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../redux/store';
@@ -8,6 +7,7 @@ import { jwtDecode } from 'jwt-decode';
 import { GoogleLogin } from '@react-oauth/google';
 import { IUserSelector } from '../../interface/IUserSlice';
 import toast from 'react-hot-toast';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 const bgImage = '/bg-1.jpg'; 
 
@@ -23,6 +23,7 @@ interface UserValues {
   
 }
 function UserLoginForm() {
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [formData, setFormData] = useState<UserValues>({
     email: '',
     password: '',
@@ -37,7 +38,9 @@ function UserLoginForm() {
     const {name, value} = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value}))
   }
-
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -45,7 +48,7 @@ function UserLoginForm() {
     console.log(response)
     if (response.meta.requestStatus !== 'rejected') {
       dispatch(fetchAdditionalUserDetails());
-      // Assuming the response payload contains user data including role
+      
       const userRole = response.payload.role;
 
       if (userRole === 'admin') {
@@ -54,7 +57,7 @@ function UserLoginForm() {
         navigate('/');
       }
     } else {
-      // Handle login failure (e.g., show an error message)
+      
       console.error('Login failed');
     }
   }
@@ -104,15 +107,19 @@ function UserLoginForm() {
                   <div className="mb-4 relative">
                     <label className="block text-gray-700" htmlFor="password">Password</label>
                     <input
-                      type='password'
+                      type={showPassword ? 'text' : 'password'}
                       id="password"
-                      name='password'
+                      name="password"
                       className="mt-2 p-2 w-full border rounded"
-                      placeholder='Enter your password'
+                      placeholder="Enter your password"
                       onChange={handleChange}
-                      
                     />
-                    
+                    <span
+                      onClick={togglePasswordVisibility}
+                      className="absolute right-3 top-3 cursor-pointer"
+                    >
+                      {showPassword ? <FiEyeOff /> : <FiEye />}
+                    </span>
                   </div>
                   <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-200">
                     Login
