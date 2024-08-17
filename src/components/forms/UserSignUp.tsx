@@ -55,7 +55,7 @@ function UserSignupForm() {
       const { confirmPassword, ...restValues } = values;
       const response = await dispatch(userSignup(restValues));
       console.log(response, 'response ----')
-    
+      
       if (response && response.meta.requestStatus !== 'rejected') {
         setIsOTP(true); 
         action.resetForm();
@@ -88,7 +88,9 @@ function UserSignupForm() {
         }
 
         await dispatch(userSignup(userValues));
+        
         navigate('/')
+        toast.success('Successfully logged in!');
 
       } catch (error: any | { message?: string; }) {
         toast.error(error.message);

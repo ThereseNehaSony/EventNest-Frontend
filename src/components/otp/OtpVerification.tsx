@@ -127,8 +127,10 @@ function OtpVerification({ userData }: { userData: TempData }) {
     const response = await dispatch(userSignup(userData));
    
     if (response && response.meta.requestStatus !== 'rejected') {
+      toast.success('Successfully logged in!');
       if (userRole === 'user') {
         navigate('/');
+        
       } else if (userRole === 'host') {
         navigate('/host/home');
       }

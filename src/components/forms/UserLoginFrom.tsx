@@ -50,7 +50,7 @@ function UserLoginForm() {
       dispatch(fetchAdditionalUserDetails());
       
       const userRole = response.payload.role;
-
+      toast.success('Successfully logged in!');
       if (userRole === 'admin') {
         navigate('/admin/admindashboard');
       } else {
@@ -73,6 +73,7 @@ function UserLoginForm() {
         }
 
         await dispatch(userLogin(userValues));
+        toast.success('Successfully logged in!');
         navigate('/')
 
       } catch (error: any) {

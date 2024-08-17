@@ -20,7 +20,7 @@ const Sidebar = () => {
     navigate('/');
   };
   return (
-    <div className="bg-gray-800 text-gray-100 w-64 flex-shrink-0 h-screen fixed">
+    <div className=" bg-gray-800 text-gray-100 w-64 flex-shrink-0 h-screen fixed">
       <div className="p-4 border-b border-gray-700">
         <h2 className="text-lg font-semibold">Admin Dashboard</h2>
       </div>

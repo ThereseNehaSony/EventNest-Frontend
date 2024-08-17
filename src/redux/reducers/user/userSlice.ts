@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IUserSignupData } from '../../../interface/IUserSignup';
 import { userSignup, userLogin, logout, updateUser, fetchUser, sendOtp, userForgotPassword, verifyOtp, resetPassword, fetchAdditionalUserDetails } from '../../actions/userActions';
 import { IUserLogin } from "../../../interface/IUserLogin";
-import { IUserDetails } from '../../../interface/IUserDetails'; // Create this interface if not already present
+import { IUserDetails } from '../../../interface/IUserDetails';
 
 interface UserState {
   user: IUserSignupData | null;

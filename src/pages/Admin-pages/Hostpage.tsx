@@ -265,6 +265,11 @@ const AdminHostsList = () => {
   };
 
   const negativeAction = () => {
+    dispatch(updateHostStatus({ newStatus: 'rejected', hostId })).then(() => {
+      setStatus((prevState) => prevState + 1);
+    }).catch((error) => {
+      console.error("Error updating host status:", error);
+    });
     setOpen(false);
   };
 

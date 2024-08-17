@@ -55,11 +55,11 @@ const Navbar: React.FC = () => {
                 {/* <li>
                   <Link to="/host/event-home" className="block py-2 px-4 hover:text-gray-400">Create Events</Link>
                 </li> */}
-                <li>
+                {/* <li>
                   <span className="block py-2 px-4">Hello, {user.username}</span>
-                </li>
+                </li> */}
                 <li>
-                  <Link to="/profile" className="block py-2 px-4 hover:text-gray-400">Profile</Link>
+                  <Link to="/profile" className="block py-2 px-4 hover:text-gray-400">{user.username}</Link>
                 </li>
                 <li>
                   <button  onClick={handleLogout} className="block py-2 px-4 hover:text-gray-400">Logout</button>

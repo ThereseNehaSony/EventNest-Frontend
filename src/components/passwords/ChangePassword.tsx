@@ -82,9 +82,9 @@ import React, { useState } from 'react';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as yup from 'yup';
 import Sidebar from '../sidebar/userSidebar';
-import { changePassword } from '../../redux/actions/userActions'; // Adjust the path according to your project structure
+import { changePassword } from '../../redux/actions/userActions';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 
-// Define the validation schema
 const validationSchema = yup.object().shape({
   newPassword: yup.string()
     .required('Password is required')
@@ -99,6 +99,16 @@ const validationSchema = yup.object().shape({
 
 const ChangePassword: React.FC = () => {
   const [message, setMessage] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const toggleShowNewPassword = () => {
+    setShowNewPassword(!showNewPassword);
+  };
+
+  const toggleShowConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
 
   const handleChangePassword = async (values: { newPassword: string, confirmPassword: string }) => {
     try {
@@ -123,28 +133,46 @@ const ChangePassword: React.FC = () => {
             onSubmit={handleChangePassword}
           >
             <Form>
-              <div className="mb-4">
+              <div className="mb-4 relative">
                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="newPassword">
                   New Password
                 </label>
-                <Field
-                  type="password"
-                  id="newPassword"
-                  name="newPassword"
-                  className="w-full px-3 py-2 border rounded"
-                />
+                <div className="relative">
+                  <Field
+                    type={showNewPassword ? "text" : "password"}
+                    id="newPassword"
+                    name="newPassword"
+                    className="w-full px-3 py-2 border rounded"
+                  />
+                  <button
+                    type="button"
+                    onClick={toggleShowNewPassword}
+                    className="absolute inset-y-0 right-0 top-0 mt-3 mr-2 text-gray-600 focus:outline-none"
+                  >
+                    {showNewPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                  </button>
+                </div>
                 <ErrorMessage name="newPassword" component="div" className="text-red-500 text-sm mt-1" />
               </div>
-              <div className="mb-4">
+              <div className="mb-4 relative">
                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="confirmPassword">
                   Confirm New Password
                 </label>
-                <Field
-                  type="password"
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  className="w-full px-3 py-2 border rounded"
-                />
+                <div className="relative">
+                  <Field
+                    type={showConfirmPassword ? "text" : "password"}
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    className="w-full px-3 py-2 border rounded"
+                  />
+                  <button
+                    type="button"
+                    onClick={toggleShowConfirmPassword}
+                    className="absolute inset-y-0 right-0 top-0 mt-3 mr-2 text-gray-600 focus:outline-none"
+                  >
+                    {showConfirmPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                  </button>
+                </div>
                 <ErrorMessage name="confirmPassword" component="div" className="text-red-500 text-sm mt-1" />
               </div>
               <button

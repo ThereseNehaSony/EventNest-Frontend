@@ -1,6 +1,6 @@
 
 import { createSlice,PayloadAction } from '@reduxjs/toolkit';
-import { updateHostProfile,fetchAdditionalHostDetails } from '../../actions/hostActions';
+import { updateHostProfile,fetchAdditionalHostDetails,fetchEventsByHost } from '../../actions/hostActions';
 import { IHostProfile } from '../../../interface/IHostProfile';
 import { IUserDetails } from '../../../interface/IUserDetails'; 
 
@@ -11,6 +11,7 @@ interface HostState {
   userDetails: IUserDetails | null;
   success: boolean;
   message: string | null;
+  events:any[] | null
 }
 
 const initialState: HostState = {
@@ -20,6 +21,7 @@ const initialState: HostState = {
   userDetails: null,
   success: false,
   message: null,
+  events:[]
 };
 
 
@@ -57,6 +59,19 @@ const hostSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchAdditionalHostDetails.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(fetchEventsByHost.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchEventsByHost.fulfilled, (state, action: PayloadAction<any[]>) => { // Adjust the type if necessary
+        state.loading = false;
+        state.events = action.payload;
+        state.error = null;
+      })
+      .addCase(fetchEventsByHost.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

@@ -1,5 +1,5 @@
 
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice,PayloadAction  } from "@reduxjs/toolkit";
 import { getAllUsers,
       getAllHosts ,
       getHostDetails,
@@ -7,7 +7,8 @@ import { getAllUsers,
       addCategory,
       updateCategoryStatus,
       updateHostStatus,
-      updateUserStatus
+      updateUserStatus,
+      getAllEvents ,
       } from "../../actions/adminActions";
 
 interface Category {
@@ -19,18 +20,52 @@ interface Category {
   
 }
 
+export interface EventData {
+  _id: string; // Ensure _id or id is correct
+  name: string;
+  category: string;
+  startDate: string;
+  time: string;
+  description: string;
+  host: string;
+  location: string;
+  entryType: string;
+  entryFee: number;
+  images: string[];
+  status?: string; // Optional, if status is part of the data
+}
+
+ interface AdminState {
+  categories: Category[];
+  hostDetails: any;
+  users: any[];
+  error: string | null;
+  loading: boolean;
+  events: EventData[];
+  partialEventData: Partial<EventData> | null;
+}
+const initialState: AdminState = {
+  categories: [],
+  hostDetails: null,
+  users: [],
+  error: null,
+  loading: false,
+  events:[],
+  partialEventData: null,
+};
+
 const adminSlice : any = createSlice({
   name: "adminSlice",
-  initialState: {
-    categories: [] as Category[],
-    hostDetails: null,
-    users: [] as any[],
-    error: null as string | null,
-    loading: false as boolean,
-  },
+  initialState,
   reducers: {
     makeErrorDisable: (state) => {
       state.error = null;
+    },
+    savePartialEventData: (state, action: PayloadAction<Partial<EventData>>) => {
+      state.partialEventData = action.payload;
+    },
+    clearPartialEventData: (state) => {
+      state.partialEventData = null;
     },
     
   },
@@ -122,6 +157,18 @@ const adminSlice : any = createSlice({
       state.loading = false;
       state.error = 'Failed to update host status';
     })
+    .addCase(getAllEvents.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(getAllEvents.fulfilled, (state, action: PayloadAction<EventData[]>) => {
+      state.events = action.payload;
+      state.loading = false;
+    })
+    .addCase(getAllEvents.rejected, (state, action) => {
+      state.error = action.error.message || 'Failed to fetch events';
+      state.loading = false;
+    });
     
      
 
@@ -130,5 +177,5 @@ const adminSlice : any = createSlice({
   }
 });
 
-export const {makeErrorDisable,setTheatreDetails} = adminSlice.actions;
+export const {makeErrorDisable,savePartialEventData, clearPartialEventData} = adminSlice.actions;
 export default adminSlice.reducer

@@ -50,6 +50,13 @@ export const getAllCategories = createAsyncThunk(
     return response.data.data.categories;
   }
 );
+export const getAllEvents = createAsyncThunk(
+  'admin/getAllEvents',
+  async () => {
+    const response = await axios.get(`${baseUrl}/event/getAllEvents`);
+    return response.data.data.events;
+  }
+);
 export const addCategory = createAsyncThunk(
   'admin/addCategory',
   async (formData: FormData, { rejectWithValue }) => {

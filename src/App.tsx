@@ -12,6 +12,7 @@ import { IUserSelector } from './interface/IUserSlice';
 import { AppDispatch } from './redux/store';
 
 import Navbar from './components/navbar/userNavbar';
+import Footer from './components/footer/footer';
 import UserSignup from './pages/User-Pages/UserSignup';
 import UserLogin from './pages/User-Pages/UserLogin';
 import HostLogin from './pages/Host-Pages/HostLogin';
@@ -32,14 +33,26 @@ import ForgotPassword from './components/passwords/ForgotPassword';
 // import OtpVerification from './components/otp/OtpVerification';
 import ChangePassword from './components/passwords/ChangePassword';
 import AdminLogin from './components/forms/AdminLogin';
-import AdminDash from './pages/Admin-pages/Userpage';
+import AdminDash from './pages/Admin-pages/Events';
 import HostProfile from './pages/Host-Pages/Host-Profile';
 import ResetPassword from './components/passwords/ResetPassword';
 import VerifyOtp from './components/passwords/VerifyOtp'
 import Category from './pages/Admin-pages/Category'
 
+import UserProfile from './pages/User-Pages/Profile';
+import EventCreationPage from './components/events/eventCreation';
+import EventAddDetails from './components/events/eventAddDetails';
+import EventPage from './components/events/eventDash';
+import EventDetailsPage from './components/events/eventDetailss';
+import CancelEventPage from './components/events/cancelEvent';
 
-
+import EventDetailPage from './pages/User-Pages/EventDetails';
+import WalletPage from './components/wallet/Wallet';
+import PaymentPage from './pages/Host-Pages/Payment';
+import PaymentSuccessPage from './pages/Host-Pages/PaymentSuccess';
+import AdminEventsPage from './pages/Admin-pages/AdminEvents';
+import EventView from './pages/Admin-pages/EventView';
+import SuccessMessage from './components/events/successMessage';
 
 function App() {
   const { user, error, } = useSelector((state: IUserSelector) => state.user);
@@ -104,8 +117,27 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/verify-otp" element={<VerifyOtp />} />
           <Route path="/reset-password" element={<ResetPassword />} /> 
-          
+
+
+          <Route path="/u-profile" element={<UserProfile />} /> 
+          <Route path ='/create-ev' element={<EventCreationPage />} />
+          {/* <Route path='/ev-details' element={<EventDetails />} /> */}
+          <Route path='/ev-dash' element={<EventPage />} />
+          <Route path='/ev-detailsss' element={<EventDetailsPage />} />
+          <Route path='/ev-cancel' element={<CancelEventPage />} />
+
+          <Route path='/event-details' element={<EventDetailPage />} />
+          <Route path='/user/wallet' element={<WalletPage />} />
+
+
+          <Route path='/host/payment' element={<PaymentPage />} />
+          <Route path='/host/payment-success' element={<PaymentSuccessPage />} />
+
+          <Route path="/admin/events" element={<Events />} />
+          <Route path='/admin/eventss' element={<AdminEventsPage />} />
+          {/* <Route path='/admin/event-view' element={<EventView />} /> */}
         </Routes>
+        {/* <Footer /> */}
       </>
     );
   }
@@ -141,11 +173,11 @@ function App() {
       <Route path="/admin/admindashboard" element={<AdminDash />} />
       <Route path="/admin/users" element={<AdminUser />} />
       <Route path="/admin/hosts" element={<Hostpage />} />
-      <Route path="/admin/events" element={<Events />} />
+      <Route path="/admin/events" element={<AdminEventsPage />} />
       <Route path="/admin/hosts/requests" element={<HostRequests />} />
       <Route path="/admin/host/details" element={<HostDetailsPage />} />
       <Route path="/admin/categories" element={<Category />} /> 
-      
+      <Route path="/event/:eventId" element={<EventView />} />
 
       </Routes>
       </>
@@ -163,6 +195,14 @@ function App() {
       <Route path="/host/home" element={<HostHome />} /> 
       <Route path="/profile" element={<HostProfile />} />
       <Route path='/find-events' element={<HostHome/>} />
+      <Route path ='/add-event' element={<EventCreationPage />} />
+      <Route path='/event-addDetails' element={<EventAddDetails />} />
+      <Route path='/event-dashboard' element={<EventPage />} />
+      <Route path="/event-dashboard/:eventId" element={<EventPage />} /> 
+      <Route path='/event-details/:eventId' element={<EventDetailsPage />} />
+      <Route path='/cancel-event' element={<CancelEventPage />} />
+      <Route path='/success' element={<SuccessMessage />} />
+
       </Routes>
       </>
     )
