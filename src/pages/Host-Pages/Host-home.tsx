@@ -47,7 +47,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
           {event.entryType === 'Paid' ? (
             <>
               <BsCurrencyRupee className="text-xl me-1" />
-              From {event.ticketDetails[0].price}
+              {/* From {event.ticketDetails[0].price} */}
             </>
           ) : (
             <>
@@ -92,7 +92,7 @@ const HostHome = () => {
       <section id="hero" className="hero bg-teal-800 py-20">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            {/* Left Column */}
+            
             <div className="order-2 lg:order-1 flex flex-col justify-center">
               <h2 className="text-3xl lg:text-4xl font-bold mb-4">
                 <span className='text-white ml-1'>HOST WITH EASE </span>
@@ -103,7 +103,7 @@ const HostHome = () => {
               </h2>
             </div>
 
-            {/* Right Column */}
+          
             <div className="order-1 lg:order-2">
               <img
                 src={firstimage}

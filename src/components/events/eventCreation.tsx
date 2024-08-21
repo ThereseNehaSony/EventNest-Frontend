@@ -41,7 +41,7 @@ const EventSetup: React.FC = () => {
             So that we can offer a personalized setup experience, please tell us about your event
           </p>
           
-          {/* Event Type Selection */}
+         
           <div className="mb-6">
             <h3 className="text-lg font-medium mb-2">How will your Event be conducted ?</h3>
             <div className="flex flex-row space-x-2">
@@ -60,7 +60,7 @@ const EventSetup: React.FC = () => {
             </div>
           </div>
           
-          {/* Payment Status Selection */}
+         
           <div className="mb-6">
             <h3 className="text-lg font-medium mb-2">Will attendees pay to attend your event ?</h3>
             <div className="flex flex-row space-x-2">
@@ -79,7 +79,7 @@ const EventSetup: React.FC = () => {
             </div>
           </div>
 
-          {/* Get Started Button */}
+         
           <div className="text-center">
             <button
               onClick={handleSubmit}

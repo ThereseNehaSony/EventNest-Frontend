@@ -5,7 +5,6 @@ import axios from 'axios';
 import { baseUrl } from '../../config/constants';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { log } from 'console';
 
 const EventAddDetails: React.FC = () => {
   const [title, setTitle] = useState<string>('');
@@ -25,7 +24,7 @@ const EventAddDetails: React.FC = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const eventState = useSelector((state: any) => state.admin.partialEventData);
-  const host = useSelector((state: any) => state.user.user.username);
+  const host = useSelector((state:any)=>state.user?.user)
 
   const [isLocationModalOpen, setIsLocationModalOpen] = useState<boolean>(false);
   const [isFreeTicketModalOpen, setIsFreeTicketModalOpen] = useState<boolean>(false);
@@ -33,16 +32,15 @@ const EventAddDetails: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState<string>('');
   const [numberOfSeats, setNumberOfSeats] = useState<number>(0);
   const [price, setPrice] = useState<number>(0);
-  const [ticketType, setTicketType] = useState<string>('');
+  const [ticketType, setTicketType] = useState<string>(''); 
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setImage(e.target.files[0]);
     }
   };
-  
 
   const handleLocationModal = () => {
     setIsLocationModalOpen(!isLocationModalOpen);
@@ -74,41 +72,57 @@ const EventAddDetails: React.FC = () => {
     setTicketType('');
     setIsPaidTicketModalOpen(false);
   };
- 
- 
   const handleSubmit = async () => {
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('category', category);
-    formData.append('description', description);
-    formData.append('location', JSON.stringify(location));
-    formData.append('entryType', entryType);
-    formData.append('ticketDetails', JSON.stringify(ticketDetails));
-    formData.append('startDate', startDate ? startDate.toISOString() : '');
-    formData.append('endDate', endDate ? endDate.toISOString() : '');
-    formData.append('type', eventState.type);
-    formData.append('host', host);
+    // Check if an image is selected
+    let imageUrl = '';
+  
     if (image) {
-      formData.append('image', image);
+      const imageFormData = new FormData();
+      imageFormData.append('file', image);
+      imageFormData.append('upload_preset', 'wh4aph9u'); // Set your Cloudinary upload preset
+      imageFormData.append('folder', 'event-nest'); // Optional: Specify folder in Cloudinary
+  
+      try {
+        const imageResponse = await axios.post(
+          `https://api.cloudinary.com/v1_1/dpq5c5q5u/image/upload`,
+          imageFormData
+        );
+        imageUrl = imageResponse.data.secure_url; // Get the uploaded image URL
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        setSuccessMessage('Failed to upload image. Please try again.');
+        return; // Stop if image upload fails
+      }
     }
-    
-    
+  
+    // Create a JSON object with all event details
+    const eventData = {
+      title,
+      category,
+      description,
+      host:host.username,
+      // location: JSON.stringify(location), // Assuming location is an object
+      entryType,
+      // ticketDetails: JSON.stringify(ticketDetails), // Assuming ticketDetails is an object
+      startDate: startDate?.toISOString() || '',
+      endDate: endDate?.toISOString() || '',
+      image: imageUrl || '', // Pass the Cloudinary image URL, or an empty string if no image
+    };
+  
     try {
-      const response = await axios.post(`${baseUrl}/event/add-event`, formData, {
+      const response = await axios.post(`${baseUrl}/event/add-event`, eventData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json', // Set content type as JSON
         },
-      
       });
+  
       setSuccessMessage('Event added successfully!');
-      setTimeout(() => {
-        navigate('/success'); // Redirect after a short delay
-      }, 2000); // Adjust the delay as needed
+      navigate('/success');
     } catch (error) {
       console.error('Error adding event:', error);
+      setSuccessMessage('Failed to add event. Please try again.');
     }
   };
-
   return (
     <section className="bg-gray-100 py-10">
       <div className="container mx-auto px-4">
@@ -128,7 +142,7 @@ const EventAddDetails: React.FC = () => {
             />
           </div>
 
-          {/* Event Category */}
+          {/* Event Type */}
           <div className="mb-4">
             <label htmlFor="eventCategory" className="block text-sm font-medium text-gray-700 mb-2">Event Category</label>
             <select
@@ -171,6 +185,16 @@ const EventAddDetails: React.FC = () => {
                 placeholderText="Select start date and time"
               />
             </div>
+            {/* Image Upload */}
+          <div className=" flex mb-4">
+            <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">Event Image</label>
+            <input
+              id="image"
+              type="file"
+              onChange={handleImageUpload}
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
             <div className="flex-1">
               <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-2">Event Ends</label>
               <DatePicker
@@ -184,18 +208,6 @@ const EventAddDetails: React.FC = () => {
             </div>
           </div>
 
-          {/* Image Upload */}
-          <div className="mb-4">
-            <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">Event Image</label>
-            <input
-              id="image"
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
           {/* Location */}
           {eventState.type !== 'online' && (
             <div className="mb-4">
@@ -203,13 +215,12 @@ const EventAddDetails: React.FC = () => {
               <div className="flex items-center">
                 <img
                   src="https://via.placeholder.com/50"
-                  alt="Map"
-                  className="mr-2"
+                  alt="Location Icon"
+                  className="w-12 h-12 mr-4"
                 />
                 <button
-                  type="button"
                   onClick={handleLocationModal}
-                  className="text-blue-500 underline"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
                 >
                   Add Location
                 </button>
@@ -217,44 +228,39 @@ const EventAddDetails: React.FC = () => {
             </div>
           )}
 
-          {/* Entry Type */}
+          {/* Ticket Type */}
           <div className="mb-4">
-            <label htmlFor="entryType" className="block text-sm font-medium text-gray-700 mb-2">Entry Type</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Entry Type</label>
             <div className="flex space-x-4">
               <button
-                type="button"
                 onClick={() => handleTicketModal('Free')}
-                className={`px-4 py-2 rounded-lg ${entryType === 'Free' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                className={`px-4 py-2 rounded-lg ${entryType === 'Free' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-blue-600`}
               >
                 Free
               </button>
               <button
-                type="button"
                 onClick={() => handleTicketModal('Paid')}
-                className={`px-4 py-2 rounded-lg ${entryType === 'Paid' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                className={`px-4 py-2 rounded-lg ${entryType === 'Paid' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-blue-600`}
               >
                 Paid
               </button>
             </div>
           </div>
 
-          {/* Save and Submit */}
-          <div className="flex justify-end space-x-4">
-            <button
-              type="button"
-              onClick={handleSubmit}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-            >
-              Save and Submit
-            </button>
-          </div>
+          {/* Submit Button */}
+          <button
+            onClick={handleSubmit}
+            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+          >
+            Submit
+          </button>
         </div>
       </div>
 
       {/* Location Modal */}
       {isLocationModalOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
-          <div className="bg-white rounded-lg shadow-md p-6 max-w-sm w-full">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
             <h3 className="text-lg font-semibold mb-4">Add Location</h3>
             <div className="mb-4">
               <label htmlFor="address1" className="block text-sm font-medium text-gray-700 mb-2">Address Line 1</label>
@@ -318,16 +324,14 @@ const EventAddDetails: React.FC = () => {
             </div>
             <div className="flex justify-end space-x-4">
               <button
-                type="button"
                 onClick={handleLocationSave}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
               >
                 Save
               </button>
               <button
-                type="button"
-                onClick={handleLocationModal}
-                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
+                onClick={() => setIsLocationModalOpen(false)}
+                className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400"
               >
                 Cancel
               </button>
@@ -338,8 +342,8 @@ const EventAddDetails: React.FC = () => {
 
       {/* Free Ticket Modal */}
       {isFreeTicketModalOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
-          <div className="bg-white rounded-lg shadow-md p-6 max-w-sm w-full">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
             <h3 className="text-lg font-semibold mb-4">Add Free Ticket</h3>
             <div className="mb-4">
               <label htmlFor="numberOfSeats" className="block text-sm font-medium text-gray-700 mb-2">Number of Seats</label>
@@ -353,16 +357,14 @@ const EventAddDetails: React.FC = () => {
             </div>
             <div className="flex justify-end space-x-4">
               <button
-                type="button"
                 onClick={handleFreeTicketSave}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
               >
                 Save
               </button>
               <button
-                type="button"
                 onClick={() => setIsFreeTicketModalOpen(false)}
-                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
+                className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400"
               >
                 Cancel
               </button>
@@ -373,8 +375,8 @@ const EventAddDetails: React.FC = () => {
 
       {/* Paid Ticket Modal */}
       {isPaidTicketModalOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
-          <div className="bg-white rounded-lg shadow-md p-6 max-w-sm w-full">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
             <h3 className="text-lg font-semibold mb-4">Add Paid Ticket</h3>
             <div className="mb-4">
               <label htmlFor="ticketType" className="block text-sm font-medium text-gray-700 mb-2">Ticket Type</label>
@@ -408,27 +410,19 @@ const EventAddDetails: React.FC = () => {
             </div>
             <div className="flex justify-end space-x-4">
               <button
-                type="button"
                 onClick={handlePaidTicketSave}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
               >
                 Save
               </button>
               <button
-                type="button"
                 onClick={() => setIsPaidTicketModalOpen(false)}
-                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
+                className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400"
               >
                 Cancel
               </button>
             </div>
           </div>
-        </div>
-      )}
-
-      {successMessage && (
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-green-500 text-white text-center">
-          {successMessage}
         </div>
       )}
     </section>

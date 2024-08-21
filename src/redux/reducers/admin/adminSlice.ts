@@ -21,8 +21,8 @@ interface Category {
 }
 
 export interface EventData {
-  _id: string; // Ensure _id or id is correct
-  name: string;
+  _id: string; 
+  title: string;
   category: string;
   startDate: string;
   time: string;
@@ -31,7 +31,7 @@ export interface EventData {
   location: string;
   entryType: string;
   entryFee: number;
-  images: string[];
+  image: string;
   status?: string; // Optional, if status is part of the data
 }
 

@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect,ComponentType  } from 'react';
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from 'react-redux';
 import toast, { Toaster } from 'react-hot-toast';
@@ -53,6 +53,11 @@ import PaymentSuccessPage from './pages/Host-Pages/PaymentSuccess';
 import AdminEventsPage from './pages/Admin-pages/AdminEvents';
 import EventView from './pages/Admin-pages/EventView';
 import SuccessMessage from './components/events/successMessage';
+import NewPost from './pages/Host-Pages/test';
+
+
+
+
 
 function App() {
   const { user, error, } = useSelector((state: IUserSelector) => state.user);
@@ -96,6 +101,7 @@ function App() {
   }, [error, dispatch]);
 
 
+
   //no user
   if (user === null || role === undefined) {
    
@@ -104,6 +110,7 @@ function App() {
         <Toaster position="top-center" />
         <Navbar />
         <Routes>
+          <Route path ='/post' element={<NewPost />} />
           <Route path="/login" element={<UserLogin />} />
           <Route path="/signup" element={<UserSignup />} />
           <Route path="/host/signup" element={<HostSignup />} />
@@ -118,6 +125,8 @@ function App() {
           <Route path="/verify-otp" element={<VerifyOtp />} />
           <Route path="/reset-password" element={<ResetPassword />} /> 
 
+         
+
 
           <Route path="/u-profile" element={<UserProfile />} /> 
           <Route path ='/create-ev' element={<EventCreationPage />} />
@@ -126,7 +135,7 @@ function App() {
           <Route path='/ev-detailsss' element={<EventDetailsPage />} />
           <Route path='/ev-cancel' element={<CancelEventPage />} />
 
-          <Route path='/event-details' element={<EventDetailPage />} />
+          <Route path='/event-details/:eventId' element={<EventDetailPage />} />
           <Route path='/user/wallet' element={<WalletPage />} />
 
 
@@ -212,3 +221,182 @@ function App() {
 }
 
 export default App;
+
+
+// import React, { useEffect ,useState} from 'react';
+// import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+// import { useDispatch, useSelector } from 'react-redux';
+// import toast, { Toaster } from 'react-hot-toast';
+
+// import './App.css';
+// import { fetchUser, logout, fetchAdditionalUserDetails } from "./redux/actions/userActions";
+// import { fetchAdditionalHostDetails } from './redux/actions/hostActions';
+// import { makeErrorDisable } from './redux/reducers/user/userSlice';
+// import { IUserSelector } from './interface/IUserSlice';
+// import { AppDispatch } from './redux/store';
+
+// import Navbar from './components/navbar/userNavbar';
+// import Footer from './components/footer/footer';
+
+// //User pages
+// import UserSignup from './pages/User-Pages/UserSignup';
+// import UserLogin from './pages/User-Pages/UserLogin';
+// import UserHome from './pages/User-Pages/UserHome';
+// import Profile from './pages/User-Pages/UserProfile';
+// import UserProfile from './pages/User-Pages/Profile';
+// import EventDetailPage from './pages/User-Pages/EventDetails';
+// import ChangePassword from './components/passwords/ChangePassword';
+// import WalletPage from './components/wallet/Wallet';
+
+// //Host pages
+// import HostLogin from './pages/Host-Pages/HostLogin';
+// import HostSignup from './pages/Host-Pages/HostSignup';
+// import HostHome from './pages/Host-Pages/Host-home';
+// import HostProfile from './pages/Host-Pages/Host-Profile';
+// import EventCreationPage from './components/events/eventCreation';
+// import EventAddDetails from './components/events/eventAddDetails';
+// import EventPage from './components/events/eventDash';
+// import EventDetailsPage from './components/events/eventDetailss';
+// import CancelEventPage from './components/events/cancelEvent';
+// import PaymentPage from './pages/Host-Pages/Payment';
+// import PaymentSuccessPage from './pages/Host-Pages/PaymentSuccess';
+
+// //Admin pages
+// import LoginPage from './pages/Admin-pages/LoginPage';
+// import AdminDash from './pages/Admin-pages/Events';
+// import AdminUser from './pages/Admin-pages/Userpage';
+// import Hostpage from './pages/Admin-pages/Hostpage';
+// import Events from './pages/Admin-pages/Events';
+// import HostRequests from './pages/Admin-pages/HostRequests';
+// import HostDetailsPage from './pages/Admin-pages/HostDetails';
+// import Category from './pages/Admin-pages/Category';
+// import AdminEventsPage from './pages/Admin-pages/AdminEvents';
+// import EventView from './pages/Admin-pages/EventView';
+
+// //Common pages
+// import ForgotPassword from './components/passwords/ForgotPassword';
+// import ResetPassword from './components/passwords/ResetPassword';
+// import VerifyOtp from './components/passwords/VerifyOtp';
+// import SuccessMessage from './components/events/successMessage';
+// import { Loader } from './components/loader/Loader';
+// import EventHome from './components/Home/EventHome';
+
+
+
+// function App() {
+//   const { user, error } = useSelector((state: IUserSelector) => state.user);
+//   const role = useSelector((state: IUserSelector) => state.user?.user?.role);
+//   const dispatch = useDispatch<AppDispatch>();
+//   const navigate = useNavigate();
+//   const id = useSelector((state: IUserSelector) => state.user?.user?._id);
+//   //const {loading:userLoading}= useSelector((state: any) => state.user.user);
+ 
+  
+//   // const { user, loading: userLoading } = useSelector((state: RootState) => state.user);
+//   // const { data: company, loading: companyLoading } = useSelector((state: RootState) => state.company);
+//   // const { admin, loading: adminLoading } = useSelector((state: RootState) => state.admin);
+
+//   // const [loading, setLoading] = useState(true);
+
+//   useEffect(() => {
+//     dispatch(fetchUser());
+//   }, [id]);
+
+//   useEffect(() => {
+//     if (user?.role === 'host') {
+//       dispatch(fetchAdditionalHostDetails());
+//     }
+//   }, [user, dispatch]);
+
+//   useEffect(() => {
+//     if (user?.role === 'user' && user.status === 'active') {
+//       dispatch(fetchAdditionalUserDetails());
+//     }
+//   }, [user, dispatch]);
+
+//   useEffect(() => {
+//     if (user && user.status === "blocked") {
+//       dispatch(logout());
+//       navigate('/');
+//     }
+//   }, [user, dispatch]);
+
+//   useEffect(() => {
+//     if (error) {
+//       toast.error(error);
+//       setTimeout(() => {
+//         dispatch(makeErrorDisable());
+//       }, 5000);
+//     }
+//   }, [error, dispatch]);
+
+//   // if (loading || userLoading ) {
+//   //   return <div className='w-screen h-screen'>
+//   //     <Loader />
+//   //   </div>;
+//   // }
+
+//   return (
+//     <>
+//       <Toaster position="top-center" />
+//       <Navbar />
+//       <Routes>
+
+//         {/* User Routes */}
+       
+//         <Route path="/" element={<UserHome />} />
+  
+//         <Route path="/find-events" element={user?.role === 'host' ? (<EventHome />) : (<UserHome />)}/>
+
+//         <Route path="/login" element={!user ? <UserLogin /> : <Navigate to="/" />} />
+//         <Route path="/signup" element={!user ? <UserSignup /> : <Navigate to="/" />} />
+//         <Route path="/profile" element={user?.role === 'user' ? (<Profile /> ):user?.role === 'host' ?(<HostProfile />): (<Navigate to="/" />)} />
+//         <Route path="/change-password" element={user?.role === 'user' ? <ChangePassword /> : <Navigate to="/" />} />
+//         <Route path="/u-profile" element={user?.role === 'user' ? <UserProfile /> : <Navigate to="/" />} />
+//         <Route path="/event-details/:eventId" element={<EventDetailPage />} />
+//         <Route path="/user/wallet" element={user?.role === 'user' ? <WalletPage /> : <Navigate to="/" />} />
+
+//         {/* Host Routes */}
+//         <Route path="/host/event-home" element={<EventHome/>} />
+//         <Route path="/host/home" element={<HostHome />} />
+//         <Route path="/host/signup" element={<HostSignup />} />
+//         <Route path="/host/login" element={<HostLogin />} />
+//         <Route path="/profile" element={user?.role === 'host' ? <HostProfile /> : <Navigate to="/login" />} />
+//         <Route path="/create-ev" element={user?.role === 'host' ? <EventCreationPage /> : <Navigate to="/" />} />
+//         <Route path="/event-addDetails" element={user?.role === 'host' ? <EventAddDetails /> : <Navigate to="/" />} />
+//         <Route path="/ev-dash" element={user?.role === 'host' ? <EventPage /> : <Navigate to="/" />} />
+//         <Route path="/ev-detailsss" element={user?.role === 'host' ? <EventDetailsPage /> : <Navigate to="/" />} />
+//         <Route path="/ev-cancel" element={user?.role === 'host' ? <CancelEventPage /> : <Navigate to="/" />} />
+//         <Route path="/host/payment" element={user?.role === 'host' ? <PaymentPage /> : <Navigate to="/" />} />
+//         <Route path="/host/payment-success" element={user?.role === 'host' ? <PaymentSuccessPage /> : <Navigate to="/" />} />
+//         <Route path ='/add-event' element={<EventCreationPage />} />
+//         <Route path='/event-addDetails' element={<EventAddDetails />} />
+//         <Route path='/event-dashboard' element={<EventPage />} />
+//         <Route path="/event-dashboard/:eventId" element={<EventPage />} /> 
+//         <Route path='/event-details/:eventId' element={<EventDetailsPage />} />
+//         <Route path='/cancel-event' element={<CancelEventPage />} />
+//        <Route path='/success' element={<SuccessMessage />} />
+
+//         {/* Admin Routes */}
+//         <Route path="/admin" element={<LoginPage />} />
+//         <Route path="/admin/admindashboard" element={user?.role === 'admin' ? <AdminDash /> : <Navigate to="/login" />} />
+//         <Route path="/admin/users" element={user?.role === 'admin' ? <AdminUser /> : <Navigate to="/login" />} />
+//         <Route path="/admin/hosts" element={user?.role === 'admin' ? <Hostpage /> : <Navigate to="/login" />} />
+//         <Route path="/admin/events" element={user?.role === 'admin' ? <AdminEventsPage /> : <Navigate to="/login" />} />
+//         <Route path="/admin/hosts/requests" element={user?.role === 'admin' ? <HostRequests /> : <Navigate to="/login" />} />
+//         <Route path="/admin/host/details" element={user?.role === 'admin' ? <HostDetailsPage /> : <Navigate to="/login" />} />
+//         <Route path="/admin/categories" element={user?.role === 'admin' ? <Category /> : <Navigate to="/login" />} />
+//         <Route path="/event/:eventId" element={user?.role === 'admin' ? <EventView /> : <Navigate to="/login" />} />
+
+//         {/* Common Routes */}
+//         <Route path="/forgot-password" element={<ForgotPassword />} />
+//         <Route path="/verify-otp" element={<VerifyOtp />} />
+//         <Route path="/reset-password" element={<ResetPassword />} />
+//         <Route path="/success-message" element={<SuccessMessage />} />
+//       </Routes>
+//       <Footer />
+//     </>
+//   );
+// }
+
+// export default App;

@@ -147,33 +147,50 @@ const EventPage: React.FC = () => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
-  const { status, attendeesCount, totalPayments, salesData, recentRegistrations } = eventDetails;
+  const { status, attendeesCount, totalPayments, salesData, recentRegistrations ,isPublished} = eventDetails;
 
   return (
     <div className="flex">
         {eventId && <EventSidebar eventId={eventId} />}
 
-      {/* Main Content */}
+    
       <main className="flex-1 p-6 bg-gray-100">
-        {/* Dashboard */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Approval Status */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold mb-4">Approval Status</h2>
-            <div className="flex items-center">
-            <span className={`inline-block px-3 py-1 text-sm font-semibold text-${status === 'approved' ? 'green' : status === 'rejected' ? 'red' : 'yellow'}-600 bg-${status === 'approved' ? 'green' : status === 'rejected' ? 'red' : 'yellow'}-200 rounded-full`}>
-             {status === 'approved' ? 'Approved' : status === 'rejected' ? 'Rejected' : 'Pending Approval'}
-            </span>
+        
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <div className="bg-white rounded-lg shadow-md p-6">
+    <h2 className="text-xl font-semibold mb-4">Approval Status</h2>
+    <div className="flex items-center">
+      {isPublished && status !== "rejected"? (
+        <span className="inline-block px-3 py-1 text-sm font-semibold text-green-600 bg-green-200 rounded-full">
+          Published
+        </span>
+      ) : (
+        <span
+          className={`inline-block px-3 py-1 text-sm font-semibold text-${
+            status === 'approved'
+              ? 'green'
+              : status === 'rejected'
+              ? 'red'
+              : 'yellow'
+          }-600 bg-${
+            status === 'approved'
+              ? 'green'
+              : status === 'rejected'
+              ? 'red'
+              : 'yellow'
+          }-200 rounded-full`}
+        >
+          {status === 'approved'
+            ? 'Approved'
+            : status === 'rejected'
+            ? 'Rejected'
+            : 'Pending Approval'}
+        </span>
+      )}
+    </div>
+  </div>
 
-              {status=='approved' && (
-                <button className="ml-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                  Publish
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Event Metrics */}
+       
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold mb-4">Event Metrics</h2>
             <div className="flex justify-between">
@@ -188,7 +205,7 @@ const EventPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Sales by Type */}
+          
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold mb-4">Sales by Type</h2>
             <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
@@ -209,7 +226,7 @@ const EventPage: React.FC = () => {
             </table>
           </div>
 
-          {/* Recent Registrations */}
+          
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold mb-4">Recent Registrations</h2>
             <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
