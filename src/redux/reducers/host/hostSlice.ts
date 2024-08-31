@@ -66,7 +66,7 @@ const hostSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchEventsByHost.fulfilled, (state, action: PayloadAction<any[]>) => { // Adjust the type if necessary
+      .addCase(fetchEventsByHost.fulfilled, (state, action: PayloadAction<any[]>) => { 
         state.loading = false;
         state.events = action.payload;
         state.error = null;

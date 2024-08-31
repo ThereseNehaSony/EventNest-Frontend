@@ -2,7 +2,7 @@ import React from 'react';
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-800 text-gray-300 p-6 mt-20">
+    <footer className="bg-gray-800 text-gray-300 p-6 ">
       <div className="max-w-7xl mx-auto flex flex-wrap justify-between">
         <div className="w-full md:w-1/4 mb-8 md:mb-0">
           <h5 className="text-lg font-semibold mb-4">EVENTNEST</h5>

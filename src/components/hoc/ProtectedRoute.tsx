@@ -1,26 +1,39 @@
+// import React from 'react';
+// import { Navigate } from 'react-router-dom';
+
+// const withAuthentication = (WrappedComponent: React.ComponentType<any>, user: any) => {
+//   return (props: any) => {
+//     if (!user) {
+//       return <Navigate to="/login" replace />;
+//     }
+//     return <WrappedComponent {...props} />;
+//   };
+// };
+
+// export default withAuthentication;
+
+
+// src/components/ProtectedRoute.tsx
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+
 
 interface ProtectedRouteProps {
-  isAuthenticated: boolean;
-  allowedRoles: string[];
-  userRole: string | undefined | null;
-  redirectPath?: string;
-  element: React.ReactElement;
+  roles: string[]; 
+  children: React.ReactNode;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
-  isAuthenticated,
-  allowedRoles,
-  userRole,
-  redirectPath = '/login',
-  element,
-}) => {
-  if (!isAuthenticated || !allowedRoles.includes(userRole || '')) {
-    return <Navigate to={redirectPath} replace />;
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ roles, children }) => {
+  const { user } = useSelector((state: any) => state.user);
+ 
+  if (!user  ) {
+    
+    return <Navigate to="/" replace />;
   }
 
-  return element;
+  
+  return <>{children}</>;
 };
 
 export default ProtectedRoute;

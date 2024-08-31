@@ -1,6 +1,6 @@
 // CancelEventPage.tsx
 import React, { useState } from 'react';
-import Sidebar from '../sidebar/eventSidebar'; // Adjust the path as necessary
+import Sidebar from '../sidebar/eventSidebar'; 
 
 const CancelEventPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -10,7 +10,7 @@ const CancelEventPage: React.FC = () => {
   };
 
   const handleConfirmCancel = () => {
-    // Add your cancel event functionality here
+  
     console.log('Event cancelled');
     setIsModalOpen(false);
   };
@@ -21,10 +21,7 @@ const CancelEventPage: React.FC = () => {
 
   return (
     <div className="flex">
-      {/* Sidebar */}
-      {/* <Sidebar /> */}
-
-      {/* Main Content */}
+      
       <main className="flex-1 p-6 bg-gray-100">
         <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
           <h2 className="text-2xl font-semibold text-gray-800 mb-6">Cancel Event</h2>

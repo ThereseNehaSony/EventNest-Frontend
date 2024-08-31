@@ -32,7 +32,7 @@ export interface EventData {
   entryType: string;
   entryFee: number;
   image: string;
-  status?: string; // Optional, if status is part of the data
+  status?: string; 
 }
 
  interface AdminState {

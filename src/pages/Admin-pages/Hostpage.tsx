@@ -242,7 +242,7 @@ const AdminHostsList = () => {
       }
     });
   }, [activePage, status, open, dispatch]);
-
+   console.log(totalPage,"page.........")
   const tableHead = ['Customer name', 'Email', 'Status','Action'];
 
   const toggleHostStatus = async (hostId: string, currentStatus: string) => {

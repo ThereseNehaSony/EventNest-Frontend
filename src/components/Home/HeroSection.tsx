@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { baseUrl } from '../../config/constants';
+import { ClipLoader } from 'react-spinners';
 
 const firstimage = '/bg-8.png';
 

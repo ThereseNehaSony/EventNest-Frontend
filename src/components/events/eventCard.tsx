@@ -5,9 +5,10 @@ import { BsCalendar, BsCurrencyRupee } from 'react-icons/bs';
 interface Event {
   _id: string;
   title?: string;
+  category?:string;
   host?: string;
   image?: string;
-  date?: string;
+  startDate?: string;
   price?: string;
 }
 
@@ -21,6 +22,13 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
   const handleCardClick = () => {
     navigate(`/event-details/${event._id}`);
   };
+  const formattedStartDate = event.startDate
+  ? new Date(event.startDate).toLocaleString('en-US', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    })
+  : 'Date not available';
+
 
   return (
     <div
@@ -33,11 +41,12 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
       ></div>
       <div className="p-4">
         <h3 className="text-lg font-semibold mb-2">{event.title}</h3>
+        <h3 className="text-sm ">{event.category}</h3>
         <p className="text-sm text-gray-600">Hosted By: {event.host}</p>
         <br />
         <div className="flex items-center text-sm text-gray-600 mb-2">
-          <BsCalendar className="text-xl me-1" />
-          {event.date}
+         <BsCalendar className="text-xl me-1" />
+          {formattedStartDate}
         </div>
         <div className="flex items-center text-sm text-gray-600 mb-2">
           <BsCurrencyRupee className="text-xl me-1" />

@@ -8,14 +8,28 @@ import { baseUrl } from '../../config/constants';
 import { toast, ToastContainer } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css'; 
 
+interface TicketType {
+  type: string;
+  seats: number;
+  price: number;
+}
+interface Location {
+  address1: string;
+  address2?: string;
+  city: string;
+  state: string;
+  pincode: string;
+  googleMapsLocation?: string;
+}
+
 const EventDetailsPage: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
   const [eventName, setEventName] = useState<string>('');
   const [eventType, setEventType] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [image, setImage] = useState<string | null>(null);
-  const [location, setLocation] = useState<string>('');
-  const [ticketType, setTicketType] = useState<string>('');
+  const [location, setLocation] = useState<Location | null>(null);
+  const [ticketTypes, setTicketTypes] = useState<TicketType[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [isApproved, setIsApproved] = useState<boolean>(false);
@@ -25,6 +39,8 @@ const EventDetailsPage: React.FC = () => {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [status,setStatus] = useState<string | null>(null )
+
 
   useEffect(() => {
     const fetchEventDetails = async () => {
@@ -39,11 +55,12 @@ const EventDetailsPage: React.FC = () => {
         setDescription(data.description);
         setImage(data.image);
         setLocation(data.location);
-        setTicketType(data.ticketType);
+        setTicketTypes(data.ticketDetails);
         setStartDate(new Date(data.startDate));
         setEndDate(new Date(data.endDate));
         setIsApproved(data.isApproved);
         setIsPublished(data.isPublished);
+        setStatus(data.status)
       } catch (error) {
         setError('Error fetching event details.');
       } finally {
@@ -53,6 +70,29 @@ const EventDetailsPage: React.FC = () => {
 
     fetchEventDetails();
   }, [eventId]);
+
+
+  const handleSaveChanges = async () => {
+    try {
+      await axios.put(`${baseUrl}/event/${eventId}`, {
+        title: eventName,
+        type: eventType,
+        description,
+        image,
+        location,
+        ticketDetails: ticketTypes,
+        startDate,
+        endDate,
+        isApproved,
+        isPublished,
+        status
+      });
+      toast.success('Event details updated successfully!');
+     // setIsEditMode(false);
+    } catch (error) {
+      toast.error('Error updating event details.');
+    }
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -77,7 +117,7 @@ const EventDetailsPage: React.FC = () => {
           startDate,
           endDate,
           location,
-          ticketType,
+          // ticketType,
           image,
         });
         toast.success('Event updated successfully');
@@ -117,37 +157,62 @@ const EventDetailsPage: React.FC = () => {
   return (
     <div className="flex">
       {eventId && <EventSidebar eventId={eventId} />}
-      <main className="flex-1 p-6 bg-gray-100">
-        <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Event Details</h2>
+      <main className="flex-1 p-6 bg-gray-50">
+        <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-8">
+          <h2 className="text-3xl font-semibold text-gray-800 mb-6">Event Details</h2>
 
-          <div className="mb-4">
+          <div className="mb-6">
             <label htmlFor="eventName" className="block text-sm font-medium text-gray-700 mb-2">Event Name</label>
             <input
               id="eventName"
               type="text"
               value={eventName}
               onChange={(e) => setEventName(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter the event name"
-              readOnly={isPublished}
+              readOnly={isPublished || status !== 'pending'}
             />
           </div>
 
-          <div className="mb-4">
+          <div className="mb-6">
             <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">Description</label>
             <textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Describe the event"
               rows={4}
-              readOnly={isPublished}
+              readOnly={isPublished || status !== 'pending'}
             />
           </div>
 
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
+          {eventType === 'offline' && location && (
+            <div className="mb-6 bg-gray-50 p-4 border border-gray-200 rounded-lg shadow-sm">
+              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+              <div className="space-y-2">
+                <p className="text-gray-700"><span className="font-medium">Address:</span> {location.address1}</p>
+                {location.address2 && (
+                  <p className="text-gray-700"><span className="font-medium">Address Line 2:</span> {location.address2}</p>
+                )}
+                <p className="text-gray-700"><span className="font-medium">City:</span> {location.city}</p>
+                <p className="text-gray-700"><span className="font-medium">State:</span> {location.state}</p>
+                <p className="text-gray-700"><span className="font-medium">Pincode:</span> {location.pincode}</p>
+                {/* {location.googleMapsLocation && (
+                  <a
+                    href={location.googleMapsLocation}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:underline mt-2 inline-block"
+                  >
+                    View on Google Maps
+                  </a>
+                )} */}
+              </div>
+            </div>
+          )}
+
+          <div className="flex flex-col md:flex-row gap-6 mb-6">
             <div className="flex-1">
               <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-2">Event Starts</label>
               <DatePicker
@@ -155,9 +220,9 @@ const EventDetailsPage: React.FC = () => {
                 onChange={(date: Date | null) => setStartDate(date)}
                 showTimeSelect
                 dateFormat="Pp"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholderText="Select start date and time"
-                readOnly={isPublished}
+                readOnly={isPublished || status !== 'pending'}
               />
             </div>
             <div className="flex-1">
@@ -167,32 +232,43 @@ const EventDetailsPage: React.FC = () => {
                 onChange={(date: Date | null) => setEndDate(date)}
                 showTimeSelect
                 dateFormat="Pp"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholderText="Select end date and time"
-                readOnly={isPublished}
+                readOnly={isPublished || status !== 'pending'}
               />
             </div>
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Ticket Type</label>
-            <p className="text-gray-700">{ticketType}</p>
-            <button
-              onClick={handleTicketModal}
-              className="ml-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-              disabled={isPublished}
-            >
-              Edit Ticket Type
-            </button>
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Ticket Types</label>
+            {ticketTypes.length > 0 ? (
+              ticketTypes.map((ticket, index) => (
+                <div key={index} className="flex items-center justify-between mb-3 p-4 bg-gray-50 border border-gray-200 rounded-lg shadow-sm">
+                  <p className="text-gray-700">
+                    {ticket.type} - {ticket.seats} seats @ ${ticket.price}
+                  </p>
+                  {/* {status === 'pending' && !isPublished && (
+                    <button
+                      onClick={() => handleTicketModal()}
+                      className="ml-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                    >
+                      Edit Ticket Type
+                    </button>
+                  // )} */}
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500">No ticket types available.</p>
+            )}
           </div>
 
-          <div className="mb-4">
+          <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">Event Image</label>
             {image ? (
               <img
                 src={image}
                 alt="Event"
-                className="w-full h-64 object-cover rounded-lg"
+                className="w-full h-64 object-cover rounded-lg shadow-sm"
               />
             ) : (
               <p className="text-gray-700">No image uploaded</p>
@@ -201,52 +277,45 @@ const EventDetailsPage: React.FC = () => {
               type="file"
               accept="image/*"
               onChange={handleImageUpload}
-              className="mt-4"
-              disabled={isPublished}
+              className="mt-4 block w-full text-gray-700 border border-gray-300 rounded-lg py-2 px-3"
+              disabled={isPublished || status !== 'pending'}
             />
           </div>
 
-          <div className="flex justify-between">
-            {!isPublished && (
-              <>
-                <button
-                  onClick={handleEdit}
-                  className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600"
-                >
-                  Edit Event
-                </button>
-                <button
-                  onClick={handlePublish}
-                  className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
-                >
-                  Publish Event
-                </button>
-              </>
+          <div className="flex justify-between items-center">
+            {!isPublished && status === 'pending' && (
+              <button
+                onClick={handleEdit}
+                className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600"
+              >
+                Edit Event
+              </button>
+            )}
+            {!isPublished && status === 'approved' && (
+              <button
+                onClick={handlePublish}
+                className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+              >
+                Publish Event
+              </button>
             )}
             {isPublished && (
               <span className="bg-gray-500 text-white px-6 py-3 rounded-lg">
                 Event Published
               </span>
             )}
-            {/* Uncomment this if you want to allow deletion */}
-            {/* <button
-              onClick={handleDelete}
-              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-            >
-              Delete Event
-            </button> */}
           </div>
         </div>
       </main>
 
       {isConfirmationModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Are you sure you want to publish this event?</h3>
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-4">
               <button
                 onClick={confirmPublish}
-                className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 mr-4"
+                className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
               >
                 Yes, Publish
               </button>

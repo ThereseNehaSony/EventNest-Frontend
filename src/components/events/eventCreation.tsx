@@ -18,10 +18,7 @@ const EventSetup: React.FC = () => {
     setPaymentStatus(status);
   };
   
-  // const handleGetStartedClick =()=>{
-  //   dispatch(savePartialEventData({ entryType: eventType, entryFee: paymentStatus === 'Free' ? 0 : undefined }));
-  //   navigate('/event-addDetails')
-  // }
+  
 
   const handleSubmit = () => {
     
@@ -29,7 +26,7 @@ const EventSetup: React.FC = () => {
     console.log('Payment Status:', paymentStatus);
     navigate('/event-addDetails')
     dispatch(savePartialEventData({ type: eventType, entryType: paymentStatus === 'free' ? 'Free' : 'Paid' }));
-    // navigate('/event-addDetails')
+    
   };
 
   return (
@@ -61,7 +58,7 @@ const EventSetup: React.FC = () => {
           </div>
           
          
-          <div className="mb-6">
+          {/* <div className="mb-6">
             <h3 className="text-lg font-medium mb-2">Will attendees pay to attend your event ?</h3>
             <div className="flex flex-row space-x-2">
               <button
@@ -77,7 +74,7 @@ const EventSetup: React.FC = () => {
                 Paid Ticket
               </button>
             </div>
-          </div>
+          </div> */}
 
          
           <div className="text-center">

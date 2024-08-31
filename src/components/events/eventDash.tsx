@@ -1,115 +1,9 @@
-// // EventPage.tsx
-// import React, { useState } from 'react';
-// import EventSidebar from '../sidebar/eventSidebar'; // Adjust the path as necessary
-
-// const EventPage: React.FC = () => {
-//   const [isApproved, setIsApproved] = useState<boolean>(false);
-//   const [attendeesCount, setAttendeesCount] = useState<number>(120);
-//   const [totalPayments, setTotalPayments] = useState<number>(5000);
-//   const [salesData, setSalesData] = useState<{ type: string; amount: number }[]>([
-//     { type: 'Free', amount: 200 },
-//     { type: 'Paid', amount: 4800 },
-//   ]);
-//   const [recentRegistrations, setRecentRegistrations] = useState<{ name: string; email: string; date: string }[]>([
-//     { name: 'John Doe', email: 'john@example.com', date: '2024-08-10' },
-//     { name: 'Jane Smith', email: 'jane@example.com', date: '2024-08-09' },
-//   ]);
-
-//   return (
-//     <div className="flex">
-      
-//       <EventSidebar />
-
-//       {/* Main Content */}
-//       <main className="flex-1 p-6 bg-gray-100">
-//         {/* Dashboard */}
-//         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-//           {/* Approval Status */}
-//           <div className="bg-white rounded-lg shadow-md p-6">
-//             <h2 className="text-xl font-semibold mb-4">Approval Status</h2>
-//             <div className="flex items-center">
-//               <span className={`inline-block px-3 py-1 text-sm font-semibold text-${isApproved ? 'green' : 'red'}-600 bg-${isApproved ? 'green' : 'red'}-200 rounded-full`}>
-//                 {isApproved ? 'Approved' : 'Pending Approval'}
-//               </span>
-//               {isApproved && (
-//                 <button className="ml-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-//                   Publish
-//                 </button>
-//               )}
-//             </div>
-//           </div>
-
-//           {/* Event Metrics */}
-//           <div className="bg-white rounded-lg shadow-md p-6">
-//             <h2 className="text-xl font-semibold mb-4">Event Metrics</h2>
-//             <div className="flex justify-between">
-//               <div>
-//                 <p className="text-gray-600">Attendees:</p>
-//                 <p className="text-xl font-bold">{attendeesCount}</p>
-//               </div>
-//               <div>
-//                 <p className="text-gray-600">Total Payments Received:</p>
-//                 <p className="text-xl font-bold">${totalPayments}</p>
-//               </div>
-//             </div>
-//           </div>
-
-//           {/* Sales by Type */}
-//           <div className="bg-white rounded-lg shadow-md p-6">
-//             <h2 className="text-xl font-semibold mb-4">Sales by Type</h2>
-//             <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
-//               <thead className="bg-gray-200">
-//                 <tr>
-//                   <th className="py-2 px-4 border-b text-left">Ticket Type</th>
-//                   <th className="py-2 px-4 border-b text-left">Amount</th>
-//                 </tr>
-//               </thead>
-//               <tbody>
-//                 {salesData.map((sale, index) => (
-//                   <tr key={index} className={`${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
-//                     <td className="py-2 px-4 border-b">{sale.type}</td>
-//                     <td className="py-2 px-4 border-b">${sale.amount}</td>
-//                   </tr>
-//                 ))}
-//               </tbody>
-//             </table>
-//           </div>
-
-//           {/* Recent Registrations */}
-//           <div className="bg-white rounded-lg shadow-md p-6">
-//             <h2 className="text-xl font-semibold mb-4">Recent Registrations</h2>
-//             <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
-//               <thead className="bg-gray-200">
-//                 <tr>
-//                   <th className="py-2 px-4 border-b text-left">Name</th>
-//                   <th className="py-2 px-4 border-b text-left">Email</th>
-//                   <th className="py-2 px-4 border-b text-left">Date</th>
-//                 </tr>
-//               </thead>
-//               <tbody>
-//                 {recentRegistrations.map((registration, index) => (
-//                   <tr key={index} className={`${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
-//                     <td className="py-2 px-4 border-b">{registration.name}</td>
-//                     <td className="py-2 px-4 border-b">{registration.email}</td>
-//                     <td className="py-2 px-4 border-b">{registration.date}</td>
-//                   </tr>
-//                 ))}
-//               </tbody>
-//             </table>
-//           </div>
-//         </div>
-//       </main>
-//     </div>
-//   );
-// };
-
-// export default EventPage;
-
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import EventSidebar from '../sidebar/eventSidebar'; // Adjust the path as necessary
-import axios from 'axios'; // Ensure axios is installed
+import EventSidebar from '../sidebar/eventSidebar'; 
+import axios from 'axios'; 
 import { baseUrl } from '../../config/constants';
+import { CheckCircleIcon, XCircleIcon, ClockIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
 
 interface SaleData {
   type: string;
@@ -147,7 +41,7 @@ const EventPage: React.FC = () => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
-  const { status, attendeesCount, totalPayments, salesData, recentRegistrations ,isPublished} = eventDetails;
+  const { status, attendeesCount, totalPayments, salesData, recentRegistrations ,isPublished,rejectionReason} = eventDetails;
 
   return (
     <div className="flex">
@@ -155,36 +49,37 @@ const EventPage: React.FC = () => {
 
     
       <main className="flex-1 p-6 bg-gray-100">
-        
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
   <div className="bg-white rounded-lg shadow-md p-6">
     <h2 className="text-xl font-semibold mb-4">Approval Status</h2>
     <div className="flex items-center">
-      {isPublished && status !== "rejected"? (
-        <span className="inline-block px-3 py-1 text-sm font-semibold text-green-600 bg-green-200 rounded-full">
+      {isPublished && status !== "rejected" ? (
+        <span className="inline-flex items-center px-3 py-1 text-m font-semibold text-green-600 bg-green-200 rounded-full">
+          <PaperAirplaneIcon className="h-5 w-5 mr-2" />
           Published
         </span>
-      ) : (
-        <span
-          className={`inline-block px-3 py-1 text-sm font-semibold text-${
-            status === 'approved'
-              ? 'green'
-              : status === 'rejected'
-              ? 'red'
-              : 'yellow'
-          }-600 bg-${
-            status === 'approved'
-              ? 'green'
-              : status === 'rejected'
-              ? 'red'
-              : 'yellow'
-          }-200 rounded-full`}
-        >
-          {status === 'approved'
-            ? 'Approved'
-            : status === 'rejected'
-            ? 'Rejected'
-            : 'Pending Approval'}
+      ) : status === 'approved' ? (
+        <span className="inline-flex items-center px-3 py-1 text-m font-semibold text-green-600 bg-green-200 rounded-full">
+          <CheckCircleIcon className="h-5 w-5 mr-2" />
+          Approved
+        </span>
+      ) :  status === 'rejected' ? (
+        <div className="flex flex-col items-start">
+          <span className="inline-flex items-center px-3 py-1 text-m font-semibold text-red-600 bg-red-200 rounded-full">
+            <XCircleIcon className="h-5 w-5 mr-2" />
+            Rejected
+          </span>
+          {rejectionReason && (
+            <p className="mt-2 text-red-600">
+              <strong>Rejection Reason:</strong> {rejectionReason}
+            </p>
+          )}
+        </div>
+      ): (
+        <span className="inline-flex items-center px-3 py-1 text-m font-semibold text-yellow-600 bg-yellow-200 rounded-full">
+          <ClockIcon className="h-5 w-5 mr-2" />
+          Pending Approval
         </span>
       )}
     </div>

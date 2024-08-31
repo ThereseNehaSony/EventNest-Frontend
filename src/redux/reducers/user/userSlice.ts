@@ -1,10 +1,10 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IUserSignupData } from '../../../interface/IUserSignup';
-import { userSignup, userLogin, logout, updateUser, fetchUser, sendOtp, userForgotPassword, verifyOtp, resetPassword, fetchAdditionalUserDetails } from '../../actions/userActions';
+import { userSignup, userLogin, logout, updateUser, fetchUser, sendOtp, userForgotPassword, verifyOtp, resetPassword, fetchAdditionalUserDetails, } from '../../actions/userActions';
 import { IUserLogin } from "../../../interface/IUserLogin";
 import { IUserDetails } from '../../../interface/IUserDetails';
-
+import { updateUserStatus } from '../../actions/adminActions';
 interface UserState {
   user: IUserSignupData | null;
   error: string | null;

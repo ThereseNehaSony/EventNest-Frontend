@@ -56,7 +56,7 @@ const instance = axios.create({
   
 export const api = axios.create({
     baseURL: baseUrl,
-    withCredentials: true, // ensure cookies are sent with requests
+    withCredentials: true, 
   });
   
   api.interceptors.response.use(

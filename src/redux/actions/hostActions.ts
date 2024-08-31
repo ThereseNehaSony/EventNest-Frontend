@@ -61,7 +61,7 @@ export const fetchEventsByHost = createAsyncThunk(
   'events/fetchEventsByHost',
   async (hostName: string) => {
     const response = await axios.get(`${baseUrl}/event/host/${hostName}`);
-    return response.data.events;// Assuming the response structure includes an events array
+    return response.data.events;
   }
 );
 

@@ -11,13 +11,13 @@ const Profile: React.FC = () => {
   const id = useSelector((state: IUserSelector) => state.user?.user?._id);
   const data = useSelector((state: IUserSelector) => state.user?.userDetails);
   const success = useSelector((state: any) => state.user.success);
-
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [phoneNumber, setPhoneNumber] = useState(data?.phone || '');
   const [address, setAddress] = useState(data?.address || '');
   
   const dispatch = useDispatch<AppDispatch>();
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
 
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPhoneNumber(e.target.value);

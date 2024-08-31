@@ -15,7 +15,7 @@ import { store } from './redux/store';
 
 
 
-// Use ReactDOM.createRoot directly
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Provider store={store}>

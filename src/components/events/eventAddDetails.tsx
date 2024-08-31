@@ -5,10 +5,14 @@ import axios from 'axios';
 import { baseUrl } from '../../config/constants';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+// import ReactQuill from 'react-quill';
+// import 'react-quill/dist/quill.snow.css'; 
+
+
 
 const EventAddDetails: React.FC = () => {
   const [title, setTitle] = useState<string>('');
-  const [category, setCategory] = useState<string>('Conference');
+  const [category, setCategory] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [image, setImage] = useState<File | null>(null);
   const [location, setLocation] = useState<{ address1: string; address2: string; city: string; state: string; pincode: string; googleMapLink: string }>({
@@ -19,20 +23,24 @@ const EventAddDetails: React.FC = () => {
     pincode: '',
     googleMapLink: ''
   });
-  const [entryType, setEntryType] = useState<string>('Free');
+  const [entryType, setEntryType] = useState<string>('');
   const [ticketDetails, setTicketDetails] = useState<{ type: string; seats: number; price: number }[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const eventState = useSelector((state: any) => state.admin.partialEventData);
-  const host = useSelector((state:any)=>state.user?.user)
+  const host = useSelector((state:any)=>state.user?.user?.username)
+  const {type} = useSelector((state:any)=>state.admin.partialEventData)
 
   const [isLocationModalOpen, setIsLocationModalOpen] = useState<boolean>(false);
   const [isFreeTicketModalOpen, setIsFreeTicketModalOpen] = useState<boolean>(false);
   const [isPaidTicketModalOpen, setIsPaidTicketModalOpen] = useState<boolean>(false);
-  const [successMessage, setSuccessMessage] = useState<string>('');
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [numberOfSeats, setNumberOfSeats] = useState<number>(0);
   const [price, setPrice] = useState<number>(0);
   const [ticketType, setTicketType] = useState<string>(''); 
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+   
 
   const navigate = useNavigate()
 
@@ -66,61 +74,96 @@ const EventAddDetails: React.FC = () => {
   };
 
   const handlePaidTicketSave = () => {
-    setTicketDetails([...ticketDetails, { type: ticketType, seats: numberOfSeats, price }]);
-    setNumberOfSeats(0);
-    setPrice(0);
-    setTicketType('');
-    setIsPaidTicketModalOpen(false);
+    if (ticketType && numberOfSeats > 0 && price > 0) {
+      setTicketDetails([...ticketDetails, { type: ticketType, seats: numberOfSeats, price }]);
+      setNumberOfSeats(0);
+      setPrice(0);
+      setTicketType('');
+      setIsPaidTicketModalOpen(false);
+    } else {
+      setSuccessMessage('Please fill all the fields');
+    }
+  }
+  const removeLocation = () => {
+    setLocation({
+      address1: '',
+      address2: '',
+      city: '',
+      state: '',
+      pincode: '',
+      googleMapLink: ''
+    });
+  };
+  const removeTicketType = (index: number) => {
+    setTicketDetails((prevTicketDetails) => 
+      prevTicketDetails.filter((_, i) => i !== index)
+    );
   };
   const handleSubmit = async () => {
-    // Check if an image is selected
+    // Validation
+    if (!title || !category || !description || !startDate || !endDate || (entryType === 'Paid' && ticketDetails.length === 0)) {
+      setErrorMessage('Please fill all the required fields.');
+      return;
+    }
+
+    if (startDate >= endDate) {
+      setErrorMessage('Start date must be less than end date.');
+      return;
+    }
+    if (entryType === 'Paid' && ticketDetails.length === 0) {
+      setErrorMessage('Please add at least one paid ticket type.');
+      return;
+    }
+
     let imageUrl = '';
-  
+
     if (image) {
       const imageFormData = new FormData();
       imageFormData.append('file', image);
-      imageFormData.append('upload_preset', 'wh4aph9u'); // Set your Cloudinary upload preset
-      imageFormData.append('folder', 'event-nest'); // Optional: Specify folder in Cloudinary
-  
+      imageFormData.append('upload_preset', 'wh4aph9u');
+      imageFormData.append('folder', 'event-nest');
+
       try {
         const imageResponse = await axios.post(
           `https://api.cloudinary.com/v1_1/dpq5c5q5u/image/upload`,
           imageFormData
         );
-        imageUrl = imageResponse.data.secure_url; // Get the uploaded image URL
+        imageUrl = imageResponse.data.secure_url;
       } catch (error) {
         console.error('Error uploading image:', error);
-        setSuccessMessage('Failed to upload image. Please try again.');
-        return; // Stop if image upload fails
+        setErrorMessage('Failed to upload image. Please try again.');
+        return;
       }
     }
-  
-    // Create a JSON object with all event details
+
     const eventData = {
       title,
       category,
       description,
-      host:host.username,
-      // location: JSON.stringify(location), // Assuming location is an object
+      host: host, 
+      location,
       entryType,
-      // ticketDetails: JSON.stringify(ticketDetails), // Assuming ticketDetails is an object
+      ticketDetails,
       startDate: startDate?.toISOString() || '',
       endDate: endDate?.toISOString() || '',
-      image: imageUrl || '', // Pass the Cloudinary image URL, or an empty string if no image
+      image: imageUrl || '',
+      type: type
     };
-  
+
     try {
       const response = await axios.post(`${baseUrl}/event/add-event`, eventData, {
         headers: {
-          'Content-Type': 'application/json', // Set content type as JSON
+          'Content-Type': 'application/json',
         },
       });
-  
+
       setSuccessMessage('Event added successfully!');
-      navigate('/success');
+      navigate('/success')
+      setErrorMessage(null); 
     } catch (error) {
       console.error('Error adding event:', error);
-      setSuccessMessage('Failed to add event. Please try again.');
+      setErrorMessage('Failed to add event. Please try again.');
+      setSuccessMessage(null); 
     }
   };
   return (
@@ -129,6 +172,29 @@ const EventAddDetails: React.FC = () => {
         <div className="max-w-lg mx-auto bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-semibold text-gray-800 mb-6">Event Details</h2>
 
+         
+      {successMessage && (
+        <div className="mt-4 p-4 bg-green-100 text-green-800 border border-green-300 rounded-md">
+          <div className="flex items-center">
+            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 3a7 7 0 100 14 7 7 0 000-14zm0 12a5 5 0 110-10 5 5 0 010 10z" />
+              <path d="M8 10.293a1 1 0 001.415-1.415L8.707 8.707l-.707.707a1 1 0 000 1.415zM10 5a1 1 0 011 1v3a1 1 0 11-2 0V6a1 1 0 011-1z" />
+            </svg>
+            <span>{successMessage}</span>
+          </div>
+        </div>
+      )}
+
+      {errorMessage && (
+        <div className="mt-4 p-4 bg-red-100 text-red-800 border border-red-300 rounded-md">
+          <div className="flex items-center">
+            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 12h2v2H9v-2zm0-4h2v2H9V8zm0-3a7 7 0 100 14 7 7 0 000-14zM10 3a7 7 0 100 14 7 7 0 000-14z" />
+            </svg>
+            <span>{errorMessage}</span>
+          </div>
+        </div>
+      )}
           {/* Event Name */}
           <div className="mb-4">
             <label htmlFor="eventTitle" className="block text-sm font-medium text-gray-700 mb-2">Event Name</label>
@@ -145,18 +211,15 @@ const EventAddDetails: React.FC = () => {
           {/* Event Type */}
           <div className="mb-4">
             <label htmlFor="eventCategory" className="block text-sm font-medium text-gray-700 mb-2">Event Category</label>
-            <select
+            <input
               id="category"
+               type="text"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="Conference">Conference</option>
-              <option value="Webinar">Webinar</option>
-              <option value="Workshop">Workshop</option>
-              <option value="Meetup">Meetup</option>
-              <option value="Seminar">Seminar</option>
-            </select>
+             
+            </input>
           </div>
 
           {/* Description */}
@@ -172,6 +235,15 @@ const EventAddDetails: React.FC = () => {
             />
           </div>
 
+          <div className=" flex mb-4">
+            <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">Event Image</label>
+            <input
+              id="image"
+              type="file"
+              onChange={handleImageUpload}
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
           {/* Event Start and End Date/Time */}
           <div className="flex mb-4 space-x-4">
             <div className="flex-1">
@@ -186,15 +258,7 @@ const EventAddDetails: React.FC = () => {
               />
             </div>
             {/* Image Upload */}
-          <div className=" flex mb-4">
-            <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">Event Image</label>
-            <input
-              id="image"
-              type="file"
-              onChange={handleImageUpload}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+          
             <div className="flex-1">
               <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-2">Event Ends</label>
               <DatePicker
@@ -227,6 +291,47 @@ const EventAddDetails: React.FC = () => {
               </div>
             </div>
           )}
+            
+          {/* Display Location */}
+          {location.address1 && (
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">Event Location</h3>
+              <p>{location.address1}, {location.address2}</p>
+              <p>{location.city}, {location.state}, {location.pincode}</p>
+              {/* {location.googleMapLink && (
+                 <p>
+                   <a href={location.googleMapLink} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+                     View on Google Maps
+                  </a>
+                 </p>
+              )} */}
+              <button
+                onClick={removeLocation}
+                className="text-red-500 hover:text-red-700 mt-2"
+              >
+                Remove Location
+              </button>
+            </div>
+          )}
+
+          {/* Ticket Type */}
+          {/* <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Entry Type</label>
+            <div className="flex space-x-4">
+              <button
+                onClick={() => handleTicketModal('Free')}
+                className={`px-4 py-2 rounded-lg ${entryType === 'Free' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-blue-600`}
+              >
+                Free
+              </button>
+              <button
+                onClick={() => handleTicketModal('Paid')}
+                className={`px-4 py-2 rounded-lg ${entryType === 'Paid' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-blue-600`}
+              >
+                Paid
+              </button>
+            </div>
+          </div> */}
 
           {/* Ticket Type */}
           <div className="mb-4">
@@ -246,6 +351,28 @@ const EventAddDetails: React.FC = () => {
               </button>
             </div>
           </div>
+
+          {ticketDetails.length > 0 && (
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">Added Ticket Types</h3>
+              <ul>
+                {ticketDetails.map((ticket, index) => (
+                  <li key={index} className="flex justify-between mb-2">
+                    <span>{ticket.type}</span>
+                    <span>{ticket.seats} Seats - ₹{ticket.price}</span>
+                    <button
+                      onClick={() => removeTicketType(index)}
+                      className="text-red-500 hover:text-red-700 ml-4"
+                    >
+                      Remove
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+
 
           {/* Submit Button */}
           <button
@@ -425,6 +552,8 @@ const EventAddDetails: React.FC = () => {
           </div>
         </div>
       )}
+
+
     </section>
   );
 };

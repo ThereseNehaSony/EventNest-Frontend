@@ -4,18 +4,18 @@ import Sidebar from '../../components/sidebar/userSidebar';
 export default function ProfilePage() {
   return (
     <div className="flex h-screen">
-      {/* Sidebar */}
+      
       <Sidebar />
 
-      {/* Main content */}
+      
       <section className="bg-gray-100 py-10 flex-grow">
         <div className="container mx-auto px-4">
           <div className="mb-4">
-            {/* Any additional content above the profile can go here */}
+            
           </div>
 
           <div className="flex flex-wrap -mx-4">
-            {/* Left Column */}
+           
             <div className="w-full lg:w-1/3 px-4 mb-4">
               <div className="bg-white rounded-lg shadow-sm overflow-hidden">
                 <div className="text-center p-6">
@@ -59,7 +59,7 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Right Column */}
+            
             <div className="w-full lg:w-2/3 px-4">
               <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-4">
                 <div className="p-6">
@@ -86,59 +86,7 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-                  <div className="p-6">
-                    <h6 className="text-gray-600 font-medium mb-4">Project Status</h6>
-                    <p className="text-sm font-medium text-gray-600 mb-2">Web Design</p>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-                      <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '80%' }}></div>
-                    </div>
-                    <p className="text-sm font-medium text-gray-600 mb-2">Website Markup</p>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-                      <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '72%' }}></div>
-                    </div>
-                    <p className="text-sm font-medium text-gray-600 mb-2">One Page</p>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-                      <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '89%' }}></div>
-                    </div>
-                    <p className="text-sm font-medium text-gray-600 mb-2">Mobile Template</p>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-                      <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '55%' }}></div>
-                    </div>
-                    <p className="text-sm font-medium text-gray-600 mb-2">Backend API</p>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5">
-                      <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '66%' }}></div>
-                    </div>
-                  </div>
-                </div> */}
-
-                {/* <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-                  <div className="p-6">
-                    <h6 className="text-gray-600 font-medium mb-4">Project Status</h6>
-                    <p className="text-sm font-medium text-gray-600 mb-2">Web Design</p>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-                      <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '80%' }}></div>
-                    </div>
-                    <p className="text-sm font-medium text-gray-600 mb-2">Website Markup</p>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-                      <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '72%' }}></div>
-                    </div>
-                    <p className="text-sm font-medium text-gray-600 mb-2">One Page</p>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-                      <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '89%' }}></div>
-                    </div>
-                    <p className="text-sm font-medium text-gray-600 mb-2">Mobile Template</p>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-                      <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '55%' }}></div>
-                    </div>
-                    <p className="text-sm font-medium text-gray-600 mb-2">Backend API</p>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5">
-                      <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '66%' }}></div>
-                    </div>
-                  </div>
-                </div> */}
-              {/* </div> */}
+              
             </div>
           </div>
         </div>
