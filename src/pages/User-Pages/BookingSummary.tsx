@@ -1,48 +1,95 @@
-// import React, { useState } from 'react';
+// import React from 'react';
+// import { useSelector } from 'react-redux';
+// import { loadStripe } from '@stripe/stripe-js';
+// import { baseUrl } from '../../config/constants';
 
-// interface TicketType {
-//   type: string;
-//   price: number;
-//   details: string;
-// }
+// const stripePromise = loadStripe('your-stripe-public-key-here');
+
+// type TicketQuantities = {
+//   [ticketType: string]: number;
+// };
 
 // const BookingSummary: React.FC = () => {
-//   // Dummy data for the event and tickets
-//   const eventName = 'Music Festival 2024';
-//   const eventDateTime = 'August 30, 2024 - 7:00 PM';
+//   const { eventName, eventDateTime, ticketQuantities = {}, totalPrice } = useSelector(
+//     (state: any) => state.ticket as { 
+//       eventName: string; 
+//       eventDateTime: string; 
+//       ticketQuantities: TicketQuantities; 
+//       totalPrice: number;
+//     }
+//   );
+//   const {_id } = useSelector((state: any) => state.user.user);
+ 
+  
 
-//   const initialTicketTypes: TicketType[] = [
-//     { type: 'General Admission', price: 20, details: 'Access to general areas' },
-//     { type: 'VIP', price: 50, details: 'Access to VIP areas with free drinks' },
-//     { type: 'Student', price: 15, details: 'Discounted ticket for students' },
-//   ];
-
-//   const [ticketQuantities, setTicketQuantities] = useState<{ [key: string]: number }>({
-//     'General Admission': 2,
-//     'VIP': 1,
-//     'Student': 0,
-//   });
-
-//   const bookingFee = 5; // Example booking fee
-
-//   // Calculate total tickets, total price, and total amount with booking fee
-//   const getTotalPrice = () => {
-//     return initialTicketTypes.reduce((acc, ticket) => {
-//       return acc + (ticket.price * (ticketQuantities[ticket.type] || 0));
-//     }, 0);
-//   };
-
-//   const totalPrice = getTotalPrice();
+//   const bookingFee = 50; 
 //   const totalAmount = totalPrice + bookingFee;
 
-//   const [paymentType, setPaymentType] = useState('');
+//   const getTicketDetails = () => {
+//     if (!ticketQuantities || Object.keys(ticketQuantities).length === 0) return null;
+
+//     return Object.entries(ticketQuantities).map(([ticketType, quantity]) => {
+//       return quantity > 0 ? (
+//         <div key={ticketType} className="flex justify-between text-gray-600 mb-2">
+//           <span>{ticketType}</span>
+//           <span>{quantity} x ₹{(totalPrice / quantity).toFixed(2)}</span>
+//         </div>
+//       ) : null;
+//     });
+//   };
+
+//   const [paymentType, setPaymentType] = React.useState('');
 
 //   const handlePaymentTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 //     setPaymentType(event.target.value);
 //   };
 
-//   const handleProceed = () => {
-//     alert('Proceed button clicked');
+//   const handleProceed = async () => {
+//     try {
+//       if (paymentType === 'online') {
+//         const stripe = await stripePromise;
+//         const response = await fetch(`${baseUrl}/payment/create-checkout-session`, {
+//           method: 'POST',
+//           headers: { 'Content-Type': 'application/json' },
+//           body: JSON.stringify({
+//             items: Object.keys(ticketQuantities).map((ticketType) => ({
+//               name: ticketType,
+//               amount: (totalPrice / ticketQuantities[ticketType]) * 100,
+//               quantity: ticketQuantities[ticketType],
+//             })),
+//           }),
+//         });
+
+//         if (!response.ok) throw new Error(response.statusText);
+
+//         const session = await response.json();
+//         const result = await stripe?.redirectToCheckout({ sessionId: session.id });
+
+//         if (result?.error) console.error(result.error.message);
+//       } else if (paymentType === 'wallet') {
+//         const response = await fetch(`${baseUrl}/user/wallet/payment`, {
+//           method: 'POST',
+//           headers: { 'Content-Type': 'application/json' },
+//           body: JSON.stringify({
+//             userId:_id,
+//             totalAmount,
+//           }),
+//         });
+
+//         if (!response.ok) throw new Error(response.statusText);
+
+//         const paymentResult = await response.json();
+//         if (paymentResult.success) {
+//           alert('Payment successful via Wallet');
+//         } else {
+//           alert('Insufficient balance in wallet');
+//         }
+//       } else {
+//         alert('Please select a valid payment method');
+//       }
+//     } catch (error) {
+//       console.error('Error during proceed:', error);
+//     }
 //   };
 
 //   return (
@@ -67,34 +114,22 @@
 //         </div>
 
 //         <div className="border-b border-gray-200 pb-4">
-//           {/* <h3 className="text-lg font-semibold text-gray-800">Tickets Selected</h3> */}
-//           {initialTicketTypes.map((ticket) => (
-//             ticketQuantities[ticket.type] > 0 && (
-//               <div key={ticket.type} className="flex justify-between text-gray-600 mb-2">
-//                 <span>{ticket.type}</span>
-//                 <span>{ticketQuantities[ticket.type]} x ${ticket.price.toFixed(2)}</span>
-//               </div>
-//             )
-//           ))}
+//           {getTicketDetails()}
 //         </div>
 
 //         <div className="border-b border-gray-200 pb-4">
 //           <div className="flex justify-between mb-2">
-//             <h3 className="text-m  text-gray-800">Sub-Total</h3>
-//             <p className="text-gray-600">₹ {totalPrice.toFixed(2)}</p>
+//             <h3 className="text-m text-gray-800">Sub-Total</h3>
+//             <p className="text-gray-600">₹{totalPrice.toFixed(2)}</p>
 //           </div>
-//           {/* <p className="text-gray-500 mb-4">Price before booking fee</p> */}
-
 //           <div className="flex justify-between mb-2">
 //             <h3 className="text-m text-gray-800">Booking Fee</h3>
-//             <p className="text-gray-600">₹ {bookingFee.toFixed(2)}</p>
+//             <p className="text-gray-600">₹{bookingFee.toFixed(2)}</p>
 //           </div>
-
 //           <div className="flex justify-between mb-2">
 //             <h3 className="text-lg font-semibold text-gray-800">Total Amount</h3>
-//             <p className="text-gray-600 text-xl font-bold">₹ {totalAmount.toFixed(2)}</p>
+//             <p className="text-gray-600 text-xl font-bold">₹{totalAmount.toFixed(2)}</p>
 //           </div>
-//           {/* <p className="text-gray-500 mb-4">Includes booking fee</p> */}
 //         </div>
 
 //         <div className="border-b border-gray-200 pb-4">
@@ -109,7 +144,7 @@
 //                 onChange={handlePaymentTypeChange}
 //                 className="mr-2"
 //               />
-//              Online Payment
+//               Online Payment
 //             </label>
 //             <label className="flex items-center">
 //               <input
@@ -138,90 +173,114 @@
 
 // export default BookingSummary;
 
-import React from 'react';
+
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { loadStripe } from '@stripe/stripe-js';
-import { Elements } from '@stripe/react-stripe-js';
 import { baseUrl } from '../../config/constants';
+import PaymentSuccessPage from '../../components/common/success'; 
 
 const stripePromise = loadStripe('pk_test_51PsiBmP7a8Dkcmab6SMs9jR9ua3Dh1HYZBEEjZwlPyk1e0hR6396zBpzBzrplG1VgZ7LbuAzHJp0FocsM4ri85OG003N8KC0jK');
 
+type TicketQuantities = {
+  [ticketType: string]: number;
+};
+
 const BookingSummary: React.FC = () => {
-  const { eventName,eventDateTime,ticketQuantities, totalPrice } = useSelector((state: any) => state.ticket);
-
-  // const eventName = 'Music Festival 2024';
-  // const eventDateTime = 'August 30, 2024 - 7:00 PM';
-
-  const initialTicketTypes = [
-    { type: 'General Admission', price: 20, details: 'Access to general areas' },
-    { type: 'VIP', price: 50, details: 'Access to VIP areas with free drinks' },
-    { type: 'Student', price: 15, details: 'Discounted ticket for students' },
-  ];
+  const { eventName, eventDateTime, ticketQuantities = {}, totalPrice } = useSelector(
+    (state: any) => state.ticket as { 
+      eventName: string; 
+      eventDateTime: string; 
+      ticketQuantities: TicketQuantities; 
+      totalPrice: number;
+    }
+  );
+  const { _id } = useSelector((state: any) => state.user.user);
+  
+  const [paymentType, setPaymentType] = useState('');
+  const [paymentStatus, setPaymentStatus] = useState<'pending' | 'success' | 'failed'>('pending');
 
   const bookingFee = 50; 
   const totalAmount = totalPrice + bookingFee;
 
   const getTicketDetails = () => {
-    return initialTicketTypes.map((ticket) => {
-      const quantity = ticketQuantities[ticket.type] || 0;
+    if (!ticketQuantities || Object.keys(ticketQuantities).length === 0) return null;
+
+    return Object.entries(ticketQuantities).map(([ticketType, quantity]) => {
       return quantity > 0 ? (
-        <div key={ticket.type} className="flex justify-between text-gray-600 mb-2">
-          <span>{ticket.type}</span>
-          <span>{quantity} x ₹{ticket.price.toFixed(2)}</span>
+        <div key={ticketType} className="flex justify-between text-gray-600 mb-2">
+          <span>{ticketType}</span>
+          <span>{quantity} x ₹{(totalPrice / quantity).toFixed(2)}</span>
         </div>
       ) : null;
     });
   };
 
-  const [paymentType, setPaymentType] = React.useState('');
-
   const handlePaymentTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPaymentType(event.target.value);
   };
+
   const handleProceed = async () => {
     try {
-      console.log("Proceed clicked");
       if (paymentType === 'online') {
         const stripe = await stripePromise;
-        console.log("Stripe initialized", stripe);
-  
         const response = await fetch(`${baseUrl}/payment/create-checkout-session`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            items: initialTicketTypes.map((ticket) => ({
-              name: ticket.type,
-              amount: ticket.price * 100,
-              quantity: ticketQuantities[ticket.type] || 1,
+            items: Object.keys(ticketQuantities).map((ticketType) => ({
+              name: ticketType,
+              amount: (totalPrice / ticketQuantities[ticketType]) ,
+              quantity: ticketQuantities[ticketType],
             })),
           }),
         });
-  
-        if (!response.ok) {
-          console.error("Failed to create session:", response.statusText);
-          return;
-        }
-  
+
+        if (!response.ok) throw new Error(response.statusText);
+
         const session = await response.json();
-        console.log("Session created:", session);
-  
-        const result = await stripe?.redirectToCheckout({
-          sessionId: session.id,
-        });
-  
+        const result = await stripe?.redirectToCheckout({ sessionId: session.id });
+        console.log(result,'res...')
+
         if (result?.error) {
           console.error(result.error.message);
+          setPaymentStatus('failed');
+        } else {
+          setPaymentStatus('success');
+          console.log(paymentStatus,"status of paymnt")
+        }
+      } else if (paymentType === 'wallet') {
+        const response = await fetch(`${baseUrl}/user/wallet/payment`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: _id,
+            totalAmount,
+          }),
+        });
+
+        if (!response.ok) throw new Error(response.statusText);
+
+        const paymentResult = await response.json();
+        if (paymentResult.success) {
+          setPaymentStatus('success');
+        } else {
+          setPaymentStatus('failed');
         }
       } else {
-        alert('Proceed with Wallet Payment');
+        alert('Please select a valid payment method');
       }
     } catch (error) {
-      console.error("Error during proceed:", error);
+      console.error('Error during proceed:', error);
+      setPaymentStatus('failed');
     }
   };
-  
+
+  if (paymentStatus === 'success') {
+    return <PaymentSuccessPage imageUrl={'/success.png'} title={'Booking Successful!'} message={'Thank you for your Booking. Your event has been successfully booked.'}
+     buttonText={'Go to My Profile'} redirectPath={'/profile'} />;
+  }
+ 
   return (
     <div className="p-8 max-w-6xl mx-auto bg-gray-100 rounded-xl shadow-lg flex flex-col lg:flex-row gap-8">
       {/* Left Side: E-Ticket Information */}

@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { useFormik } from 'formik';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch ,useSelector } from 'react-redux';
@@ -56,19 +56,25 @@ function UserSignupForm() {
       const response = await dispatch(userSignup(restValues));
       console.log(response, 'response ----')
       
-      if (response && response.meta.requestStatus !== 'rejected') {
+      if (response && response.meta.requestStatus === 'fulfilled') {
         setIsOTP(true); 
+        console.log(isOTP,"otp statte...")
+        console.log("setting true....")
         action.resetForm();
         setTempData(restValues); 
-      } else {
-        
-        if (error) {
+      }else {
+        if (response.payload?.message) {
+          toast.error(response.payload.message); 
+        } else if (error) {
           toast.error(error); 
-         
         }
       }
     },
   });
+
+  useEffect(() => {
+    console.log("Component re-rendered, isOTP:", isOTP);
+  }, [isOTP]);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);

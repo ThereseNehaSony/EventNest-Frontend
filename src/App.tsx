@@ -168,7 +168,7 @@ function App() {
         <Route path="/admin/event/:eventId" element={<ProtectedRoute roles={['admin']}><EventView /></ProtectedRoute>} />
         
         {/* Host routes */}
-        <Route path="/host/home" element={<ProtectedRoute roles={['host']}><HostHome /></ProtectedRoute>} />
+        <Route path="/host/home" element={<HostHome/> } />
         <Route path="/host/profile" element={<ProtectedRoute roles={['host']}><HostProfile /></ProtectedRoute>} />
         <Route path="/add-event" element={<ProtectedRoute roles={['host']}><EventCreationPage /></ProtectedRoute>} />
         <Route path="/event-addDetails" element={<ProtectedRoute roles={['host']}><EventAddDetails /></ProtectedRoute>} />

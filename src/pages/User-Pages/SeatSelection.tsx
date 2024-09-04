@@ -311,7 +311,7 @@ const handleRegister = async () => {
   try {
     // Prepare the booking data
     const bookingData = {
-      userId: user?._id, // Assuming you have the user information
+      userName: user?.username, // Assuming you have the user information
       // eventName: event?.title,
       eventId:event?._id,
       status: 'confirmed', // Default status
@@ -356,13 +356,11 @@ const handleRegister = async () => {
 
   return (
     <div className="p-6 max-w-lg mx-auto bg-gray-100 rounded-xl shadow-lg space-y-6">
-      <h1 className="text-3xl font-semibold text-center text-gray-800 mb-6">{event?.name}</h1>
-
+      <h1 className="text-3xl font-semibold text-center text-gray-800 mb-6">{event?.title}</h1>
+      <img src={event.image} alt="Event" className="w-full h-64 object-contain" />
       {event?.entryType === 'Free' ? (
        <div className="space-y-6 p-8 bg-gray-50 rounded-xl shadow-lg">
-       <p className="text-2xl text-gray-800 font-semibold">
-         {event?.description}
-       </p>
+       
        <div className="text-lg text-gray-700 space-y-2">
          <p className="flex items-center">
            <svg

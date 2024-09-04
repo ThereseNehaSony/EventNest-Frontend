@@ -112,6 +112,7 @@ const Navbar: React.FC = () => {
     }
   };
 
+  
   return (
     <div className="bg-gray-800 text-white">
       <div className="container mx-auto flex justify-between items-center p-4">
@@ -125,20 +126,26 @@ const Navbar: React.FC = () => {
             <li>
               <Link to="/find-events" className="block py-2 px-4 hover:text-gray-400">Find Events</Link>
             </li>
+            
             {!user ? (
               <>
                 <li>
                   <Link to="/host/event-home" className="block py-2 px-4 hover:text-gray-400">Create Events</Link>
                 </li>
                 <li>
-                  <Link to="/login" className="block py-2 px-4 hover:text-gray-400">Login</Link>
+                  <Link to="/signup" className="block py-2 px-4 hover:text-gray-400">Sign Up</Link>
                 </li>
                 <li>
-                  <Link to="/signup" className="block py-2 px-4 hover:text-gray-400">Sign Up</Link>
+                  <Link to="/login" className="block py-2 px-4 hover:text-gray-400">Login</Link>
                 </li>
               </>
             ) : (
               <>
+                {user.role === 'host' && (
+                  <li>
+                    <Link to="/host/home" className="block py-2 px-4 hover:text-gray-400">Create Events</Link>
+                  </li>
+                )}
                 <li>
                   <button 
                     onClick={handleProfileNavigation}
