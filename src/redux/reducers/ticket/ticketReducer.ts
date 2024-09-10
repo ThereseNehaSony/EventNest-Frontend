@@ -5,6 +5,7 @@ interface TicketState {
   totalPrice: number;
   eventName?: string; // Optional properties
   eventDateTime?: string; // Optional properties
+  eventId?:string;
 }
 
 const initialState: TicketState = {
@@ -12,6 +13,7 @@ const initialState: TicketState = {
   totalPrice: 0,
   eventName: undefined,
   eventDateTime: undefined,
+  eventId:undefined,
 };
 
 const ticketSlice = createSlice({
@@ -24,11 +26,13 @@ const ticketSlice = createSlice({
       totalPrice: number;
       eventName?: string;
       eventDateTime?: string;
+      eventId?: string;
     }>) {
       state.ticketQuantities = action.payload.ticketQuantities;
       state.totalPrice = action.payload.totalPrice;
       state.eventName = action.payload.eventName;
       state.eventDateTime = action.payload.eventDateTime;
+      state.eventId = action.payload.eventId;
     },
   },
 });

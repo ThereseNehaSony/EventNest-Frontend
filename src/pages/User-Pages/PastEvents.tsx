@@ -1,50 +1,82 @@
-import React from 'react';
-import Sidebar from '../../components/sidebar/userSidebar'; // Adjust the import path to your actual Sidebar component
-import Ticket from './Ticket'; // Adjust the import path to your actual Ticket component
+import React, { useState, useEffect } from 'react';
+import BookedEventCard from '../../components/events/bookedEvent';
+import Sidebar from '../../components/sidebar/userSidebar';
+import axios from 'axios';
+import { baseUrl } from '../../config/constants';
+import { useSelector } from 'react-redux';
 
-const PastEventsPage: React.FC = () => {
-  const pastEvents = [
-    {
-      eventName: 'Spring Art Exhibition',
-      eventDate: 'April 15, 2024',
-      eventTime: '5:00 PM',
-      location: 'Art Gallery, LA',
-      imageUrl: '/images/event2.jpg',
-      status: 'Completed',
-    },
-    {
-      eventName: 'Winter Gala',
-      eventDate: 'December 20, 2023',
-      eventTime: '8:00 PM',
-      location: 'Ballroom, NY',
-      imageUrl: '/images/event4.jpg',
-      status: 'Completed',
-    },
-    // Add more past events
-  ];
+interface Event {
+  _id: string;
+  userName: string;
+  eventId: {
+    _id: string;
+    title: string;
+    startDate: string;
+    endDate: string;
+    image: string;
+    location: {
+      address1: string;
+      address2: string;
+      city: string;
+      state: string;
+      pincode: string;
+    };
+    description: string;
+    category: string;
+    type: string;
+    status: string;
+  };
+  status: string;
+  bookingDate: string;
+}
+
+const UpcomingEventsPage: React.FC = () => {
+  const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
+  const {username} = useSelector((state:any)=>state.user.user)
+
+  useEffect(() => {
+    const fetchUpcomingEvents = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}/event/get-past-events/${username}`);
+        setUpcomingEvents(response.data);
+      } catch (error) {
+        console.error('Error fetching upcoming events:', error);
+      }
+    };
+
+    fetchUpcomingEvents();
+  }, [username]);
+
 
   return (
-    <div className="flex h-screen">
-      <Sidebar /> 
+    <div className="flex h-screen overflow-hidden">
+      <Sidebar />
 
-      <div className="flex-1 p-6">
-        <h1 className="text-3xl font-bold mb-6">Past Events</h1>
-        <div className="space-y-4">
-          {pastEvents.map((event, index) => (
-            <Ticket
-              key={index}
-              eventName={event.eventName}
-              eventDate={event.eventDate}
-              eventTime={event.eventTime}
-              location={event.location}
-              imageUrl={event.imageUrl}
-              status={event.status}
-            />
-          ))}
+      <div className="flex-1 flex flex-col overflow-auto">
+        <div className="flex-1 p-6">
+          <h1 className="text-3xl font-bold mb-6">Upcoming Events</h1>
+          {upcomingEvents.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {upcomingEvents.map((event) => (
+                <BookedEventCard
+                  key={event._id}
+                  eventName={event.eventId.title}
+                  eventDate={new Date(event.eventId.startDate).toLocaleDateString()} 
+                  eventTime={new Date(event.eventId.startDate).toLocaleTimeString()} 
+                  imageUrl={event.eventId.image}
+                  status={event.status}
+                  bookingId={event._id}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center text-gray-600">
+              <p>No past events found.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 };
-
-export default PastEventsPage;
+export default UpcomingEventsPage;

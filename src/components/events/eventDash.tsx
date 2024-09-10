@@ -21,13 +21,20 @@ const EventPage: React.FC = () => {
   const [eventDetails, setEventDetails] = useState<any>(null); 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [attendeesCount, setAttendeesCount] = useState<number>(0);
+  const [totalAmountReceived, setTotalAmountReceived] = useState<number>(0);
+
 
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
         const response = await axios.get(`${baseUrl}/event/${eventId}`); 
-        setEventDetails(response.data);
-        console.log(eventDetails,"details,,,,,,,,")
+        
+        const { event, attendeesCount, totalAmountReceived } = response.data;
+          setEventDetails(event);
+          setAttendeesCount(attendeesCount);
+          setTotalAmountReceived(totalAmountReceived);
+       
       } catch (error) {
         setError('Error fetching event details.');
       } finally {
@@ -41,7 +48,7 @@ const EventPage: React.FC = () => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
-  const { status, attendeesCount, totalPayments, salesData, recentRegistrations ,isPublished,rejectionReason} = eventDetails;
+  const { status, totalPayments, salesData, recentRegistrations ,isPublished,rejectionReason} = eventDetails;
 
   return (
     <div className="flex">
@@ -95,7 +102,7 @@ const EventPage: React.FC = () => {
               </div>
               <div>
                 <p className="text-gray-600">Total Payments Received:</p>
-                <p className="text-xl font-bold">${totalPayments}</p>
+                <p className="text-xl font-bold">₹ {totalAmountReceived}</p>
               </div>
             </div>
           </div>

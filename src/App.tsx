@@ -54,8 +54,10 @@ import PaymentSuccess from './pages/User-Pages/PaymentSuccess';
 import Success from './pages/Host-Pages/Success';
 import UpcomingEventsPage from './pages/User-Pages/UpcomingEvents';
 import PastEventsPage from './pages/User-Pages/PastEvents';
-import TicketDetail from './pages/User-Pages/ticket-detail';
+
 import BookingSuccess from './pages/User-Pages/BookingSucces';
+import TicketDetails from './pages/User-Pages/TicketDetails';
+import AttendeesPage from './pages/Host-Pages/Attendees';
 
 
 function App() {
@@ -137,13 +139,14 @@ function App() {
         <Route path="/host/event-home" element={<EventHome />} />
         <Route path="/host/signup" element={<HostSignup />} />
         <Route path="/host/login" element={<HostLogin />} />
+        <Route path='/attendees' element={<AttendeesPage />}/>
         
         <Route path="/seat-selection/:eventId" element={<SeatSelection />} />
         <Route path ='/booking-summary' element={<BookingSummary />} />
         <Route path='/payment-success' element={<PaymentSuccess />} />
         <Route path ='/upcoming-events' element={<UpcomingEventsPage />} />
        <Route path='/past-events' element={<PastEventsPage />} />
-       <Route path="/ticket-detail" element={<TicketDetail />} />
+       <Route path="/ticket-detail/:bookingId" element={<TicketDetails />} />
        <Route path='/booking-success' element={<BookingSuccess />} />
      
      

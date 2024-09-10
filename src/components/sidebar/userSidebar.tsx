@@ -16,7 +16,7 @@ const Sidebar: React.FC = () => {
               <Link to="/change-password" className="block py-2 px-4 hover:text-gray-400">Change Password</Link>
             </li>
             <li>
-              <Link to="/wallet" className="block py-2 px-4 hover:text-gray-400">Wallet</Link>
+              <Link to="/user/wallet" className="block py-2 px-4 hover:text-gray-400">Wallet</Link>
             </li>
            
           </ul>

@@ -258,6 +258,7 @@ const BookingPage: React.FC = () => {
   const { event, loading, error } = useSelector((state: any) => state.event);
   const navigate = useNavigate();
   const {user} = useSelector((state:any)=>state.user)
+
   useEffect(() => {
     if (eventId) {
       dispatch(fetchEventById(eventId));
@@ -292,15 +293,16 @@ const BookingPage: React.FC = () => {
   };
 
   const handleNext = () => {
-    const totalPrice = event?.ticketDetails.reduce((acc: number, ticket: TicketType) => {
+    const totalPrice = event?.event.ticketDetails.reduce((acc: number, ticket: TicketType) => {
       return acc + (ticket.price * (ticketQuantities[ticket.type] || 0));
     }, 0) || 0;
 
     dispatch(saveTicketData({ 
       ticketQuantities, 
       totalPrice, 
-      eventName: event?.title, 
-      eventDateTime: event?.startDate
+      eventName: event?.event.title, 
+      eventDateTime: event?.event.startDate,
+      eventId:eventId
     }));
 
     navigate('/booking-summary');
@@ -328,8 +330,8 @@ const handleRegister = async () => {
       dispatch(saveTicketData({ 
         ticketQuantities: {}, 
         totalPrice: 0, 
-        eventName: event?.name, 
-        eventDateTime: event?.dateTime 
+        eventName: event?.event.name, 
+        eventDateTime: event?.event.dateTime 
       }));
 
       // Redirect to the success page
@@ -346,7 +348,7 @@ const handleRegister = async () => {
   };
 
   const getTotalPrice = () => {
-    return (event?.ticketDetails || []).reduce((acc: number, ticket: TicketType) => {
+    return (event?.event.ticketDetails || []).reduce((acc: number, ticket: TicketType) => {
       return acc + (ticket.price * (ticketQuantities[ticket.type] || 0));
     }, 0);
   };
@@ -356,9 +358,9 @@ const handleRegister = async () => {
 
   return (
     <div className="p-6 max-w-lg mx-auto bg-gray-100 rounded-xl shadow-lg space-y-6">
-      <h1 className="text-3xl font-semibold text-center text-gray-800 mb-6">{event?.title}</h1>
-      <img src={event.image} alt="Event" className="w-full h-64 object-contain" />
-      {event?.entryType === 'Free' ? (
+      <h1 className="text-3xl font-semibold text-center text-gray-800 mb-6">{event?.event.title}</h1>
+      <img src={event.event.image} alt="Event" className="w-full h-64 object-contain" />
+      {event?.event.entryType === 'Free' ? (
        <div className="space-y-6 p-8 bg-gray-50 rounded-xl shadow-lg">
        
        <div className="text-lg text-gray-700 space-y-2">
@@ -394,7 +396,7 @@ const handleRegister = async () => {
                d="M12 2a10 10 0 1010 10A10 10 0 0012 2zm0 18a8 8 0 110-16 8 8 0 010 16z"
              />
            </svg>
-           <span>Location: {event?.location?.address}</span>
+           <span>Location: {event?.event.location?.address}</span>
          </p>
        </div>
        <button
@@ -408,7 +410,7 @@ const handleRegister = async () => {
       ) : (
         <>
           <div className="space-y-4">
-            {event?.ticketDetails.map((ticket: TicketType, index: number) => (
+            {event?.event.ticketDetails?.map((ticket: TicketType, index: number) => (
               <div key={index} className="relative bg-white p-6 rounded-lg shadow-md flex items-start">
                 <div className="flex-1">
                   <h2 className="text-lg font-semibold text-gray-800">{ticket.type}</h2>

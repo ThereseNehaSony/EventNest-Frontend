@@ -157,3 +157,12 @@ export const changePassword = async (newPassword: string) => {
   return response.data;
 };
 
+
+export const fetchWalletData = async (userId: string) => {
+  try {
+    const response = await axios.get(`${baseUrl}/user/${userId}/wallet`);
+    return response.data;
+  } catch (error) {
+    throw new Error('Error fetching wallet data');
+  }
+};

@@ -50,17 +50,19 @@ const EventDetailsPage: React.FC = () => {
         }
         const response = await axios.get(`${baseUrl}/event/${eventId}`);
         const data = response.data;
-        setEventName(data.title);
-        setEventType(data.type);
-        setDescription(data.description);
-        setImage(data.image);
-        setLocation(data.location);
-        setTicketTypes(data.ticketDetails);
-        setStartDate(new Date(data.startDate));
-        setEndDate(new Date(data.endDate));
-        setIsApproved(data.isApproved);
-        setIsPublished(data.isPublished);
-        setStatus(data.status)
+        setEventName(data.event.title);
+        setEventType(data.event.type);
+        setDescription(data.event.description);
+        setImage(data.event.image);
+        setLocation(data.event.location);
+        setTicketTypes(data.event.ticketDetails);
+        setStartDate(new Date(data.event.startDate));
+        setEndDate(new Date(data.event.endDate));
+        setIsApproved(data.event.isApproved);
+        setIsPublished(data.event.isPublished);
+        setStatus(data.event.status)
+
+        console.log(data,"dataa....")
       } catch (error) {
         setError('Error fetching event details.');
       } finally {
@@ -212,7 +214,7 @@ const EventDetailsPage: React.FC = () => {
             </div>
           )}
 
-          <div className="flex flex-col md:flex-row gap-6 mb-6">
+          {/* <div className="flex flex-col md:flex-row gap-6 mb-6">
             <div className="flex-1">
               <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-2">Event Starts</label>
               <DatePicker
@@ -237,11 +239,11 @@ const EventDetailsPage: React.FC = () => {
                 readOnly={isPublished || status !== 'pending'}
               />
             </div>
-          </div>
+          </div> */}
 
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">Ticket Types</label>
-            {ticketTypes.length > 0 ? (
+            {ticketTypes?.length > 0 ? (
               ticketTypes.map((ticket, index) => (
                 <div key={index} className="flex items-center justify-between mb-3 p-4 bg-gray-50 border border-gray-200 rounded-lg shadow-sm">
                   <p className="text-gray-700">
