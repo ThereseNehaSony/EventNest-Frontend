@@ -54,6 +54,12 @@
 import React from 'react';
 import { GoogleMap, LoadScript, Marker,  } from '@react-google-maps/api';
 
+const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+
+
+if (!apiKey) {
+  throw new Error('Google Maps API key is not defined in the environment variables.');
+}
 const mapContainerStyle = {
   height: "400px",
   width: "100%"
@@ -71,7 +77,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ onLocationSelect }) => {
   };
 
   return (
-    <LoadScript googleMapsApiKey="AIzaSyCsoVmBF71fkwMGprznArIEA6YuKsRxxsw">
+    <LoadScript googleMapsApiKey={apiKey} >
       <GoogleMap
         mapContainerStyle={mapContainerStyle}
         onClick={handleMapClick}

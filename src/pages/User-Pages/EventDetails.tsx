@@ -22,6 +22,12 @@ const EventDetailPage: React.FC = () => {
   const { event, relatedEvents, loading, error } = useSelector((state: any) => state.event);
   const testLat = 37.7749; // Latitude for San Francisco
   const testLng = -122.4194; 
+
+  const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+
+if (!apiKey) {
+  throw new Error('Google Maps API key is not defined in the environment variables.');
+}
   useEffect(() => {
     if (eventId) {
       dispatch(fetchEventById(eventId));
@@ -98,7 +104,7 @@ const EventDetailPage: React.FC = () => {
               <div className="map-container">
                
               {event.location && (
-                <LoadScript googleMapsApiKey="AIzaSyCsoVmBF71fkwMGprznArIEA6YuKsRxxsw">
+                <LoadScript googleMapsApiKey={apiKey}>
                   <GoogleMap
                     mapContainerStyle={mapContainerStyle}
                     center={{ lat: event.location.lat, lng: event.location.lng }}
