@@ -52,29 +52,29 @@ function UserSignupForm() {
     initialValues,
     validationSchema: ValidationSchema,
     onSubmit: async (values, action) => {
-      const { confirmPassword, ...restValues } = values;
-      const response = await dispatch(userSignup(restValues));
-      console.log(response, 'response ----')
       
-      if (response && response.meta.requestStatus === 'fulfilled') {
-        setIsOTP(true); 
-        console.log(isOTP,"otp statte...")
-        console.log("setting true....")
+      const { confirmPassword, ...restValues } = values
+      const response = await dispatch(userSignup(restValues))
+      console.log("Signup response status:", response.meta.requestStatus);
+   
+      if (response.meta.requestStatus ==='fulfilled') {
+        console.log("Signup result:", response.payload?.success);
+        console.log("setting trueee")
+        setIsOTP(true);
+        
+        console.log(isOTP)
         action.resetForm();
-        setTempData(restValues); 
-      }else {
-        if (response.payload?.message) {
-          toast.error(response.payload.message); 
-        } else if (error) {
-          toast.error(error); 
-        }
+        setTempData(restValues)
       }
-    },
-  });
+    }
+  })
 
   useEffect(() => {
-    console.log("Component re-rendered, isOTP:", isOTP);
+    console.log("OTP state changed:", isOTP);
   }, [isOTP]);
+  
+
+
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);

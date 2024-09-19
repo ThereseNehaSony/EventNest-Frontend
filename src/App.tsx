@@ -58,6 +58,7 @@ import PastEventsPage from './pages/User-Pages/PastEvents';
 import BookingSuccess from './pages/User-Pages/BookingSucces';
 import TicketDetails from './pages/User-Pages/TicketDetails';
 import AttendeesPage from './pages/Host-Pages/Attendees';
+import EventSearchResults from './pages/User-Pages/SearchResults';
 
 
 function App() {
@@ -133,13 +134,15 @@ function App() {
             </ProtectedRoute>
           ) : (<EventDetailPage /> )}/>
 
+    <Route path  ='/results' element={<EventSearchResults />} />
+
         <Route path="/user/wallet" element={<WalletPage />} />
         <Route path="/host/payment" element={<PaymentPage />} />
         <Route path="/host/payment-success" element={<PaymentSuccessPage />} />
         <Route path="/host/event-home" element={<EventHome />} />
         <Route path="/host/signup" element={<HostSignup />} />
         <Route path="/host/login" element={<HostLogin />} />
-        <Route path='/attendees' element={<AttendeesPage />}/>
+        <Route path='/attendees/:eventId' element={<AttendeesPage />}/>
         
         <Route path="/seat-selection/:eventId" element={<SeatSelection />} />
         <Route path ='/booking-summary' element={<BookingSummary />} />

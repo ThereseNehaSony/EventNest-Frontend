@@ -245,6 +245,8 @@ import { AppDispatch } from '../../redux/store';
 import { saveTicketData } from '../../redux/reducers/ticket/ticketReducer';
 import axios from 'axios';
 import { baseUrl } from '../../config/constants';
+import { toast } from 'react-hot-toast';
+
 
 interface TicketType {
   type: string;
@@ -270,29 +272,66 @@ const BookingPage: React.FC = () => {
   }, [dispatch, eventId]);
 
   const [ticketQuantities, setTicketQuantities] = React.useState<{ [key: string]: number }>({});
-
+  
   const handleAdd = (type: string) => {
+    const selectedTicketTypes = Object.keys(ticketQuantities).filter(
+      (key) => ticketQuantities[key] > 0
+    );
+  
+    if (selectedTicketTypes.length > 0 && !selectedTicketTypes.includes(type)) {
+      toast.error('You can only select one type of ticket.');
+      return;
+    }
+  
     setTicketQuantities((prevQuantities) => ({
       ...prevQuantities,
       [type]: (prevQuantities[type] || 0) + 1,
     }));
   };
-
+  
   const handleIncrement = (type: string) => {
-    setTicketQuantities((prevQuantities) => ({
-      ...prevQuantities,
-      [type]: (prevQuantities[type] || 0) + 1,
-    }));
+    const selectedTicketTypes = Object.keys(ticketQuantities).filter(
+      (key) => ticketQuantities[key] > 0
+    );
+  
+    if (selectedTicketTypes.length > 0 && !selectedTicketTypes.includes(type)) {
+      toast.error('You can only select one type of ticket.');
+      return;
+    }
+  
+    const selectedTicket = event?.event.ticketDetails.find(
+      (ticket: TicketType) => ticket.type === type
+    );
+  
+    if (selectedTicket) {
+      const currentQuantity = ticketQuantities[type] || 0;
+  
+ 
+      if (currentQuantity < selectedTicket.seats) {
+        setTicketQuantities((prevQuantities) => ({
+          ...prevQuantities,
+          [type]: currentQuantity + 1,
+        }));
+      } else {
+        toast.error(`Maximum available quantity for ${type} reached.`);
+      }
+    }
   };
-
+  
   const handleDecrement = (type: string) => {
     setTicketQuantities((prevQuantities) => ({
       ...prevQuantities,
       [type]: Math.max((prevQuantities[type] || 0) - 1, 0),
     }));
   };
-
   const handleNext = () => {
+    
+    const selectedTicketType = Object.values(ticketQuantities).some(quantity => quantity > 0);
+
+    if (!selectedTicketType) {
+      toast.error('Please select at least one ticket before proceeding.');
+      return;
+    }
     const totalPrice = event?.event.ticketDetails.reduce((acc: number, ticket: TicketType) => {
       return acc + (ticket.price * (ticketQuantities[ticket.type] || 0));
     }, 0) || 0;
@@ -311,22 +350,22 @@ const BookingPage: React.FC = () => {
  
 const handleRegister = async () => {
   try {
-    // Prepare the booking data
+   
     const bookingData = {
-      userName: user?.username, // Assuming you have the user information
-      // eventName: event?.title,
-      eventId:event?._id,
-      status: 'confirmed', // Default status
-      // No need to include ticketType, quantity, or amountPaid for free events
+      userName: user?.username,
+    
+      eventId:eventId,
+      status: 'confirmed', 
+      
     };
-    console.log(bookingData,"booking dat");
+    console.log(bookingData,"booking data");
     
 
-    // Make the API call to save the booking in the database
+   
     const response = await axios.post(`${baseUrl}/event/register`, bookingData);
 
     if (response.status === 201) {
-      // If the booking is successful, dispatch to save ticket data to Redux
+      
       dispatch(saveTicketData({ 
         ticketQuantities: {}, 
         totalPrice: 0, 
@@ -334,12 +373,12 @@ const handleRegister = async () => {
         eventDateTime: event?.event.dateTime 
       }));
 
-      // Redirect to the success page
+
       navigate('/booking-success');
     }
   } catch (error) {
     console.error('Error registering for the event:', error);
-    // Handle error (show a notification, etc.)
+   
   }
 };
 
@@ -379,7 +418,7 @@ const handleRegister = async () => {
                d="M8 7V3m8 4V3m-9 18h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v12a2 2 0 002 2z"
              />
            </svg>
-           <span>Date & Time: {event?.startDate}</span>
+           <span>Date & Time: {event?.event.startDate}</span>
          </p>
          <p className="flex items-center">
            <svg
@@ -396,7 +435,7 @@ const handleRegister = async () => {
                d="M12 2a10 10 0 1010 10A10 10 0 0012 2zm0 18a8 8 0 110-16 8 8 0 010 16z"
              />
            </svg>
-           <span>Location: {event?.event.location?.address}</span>
+           <span>The event link will be available 10 minutes before the start time."</span>
          </p>
        </div>
        <button

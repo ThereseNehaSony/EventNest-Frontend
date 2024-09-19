@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import Sidebar from '../../components/sidebar/userSidebar'; // Assuming Sidebar component is already created
+import Sidebar from '../../components/sidebar/eventSidebar'; 
 import { baseUrl } from '../../config/constants';
 
 const AttendeesPage = () => {
@@ -9,47 +9,61 @@ const AttendeesPage = () => {
   const [attendees, setAttendees] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
-//   useEffect(() => {
-//     const fetchAttendees = async () => {
-//       try {
-//         const response = await axios.get(`${baseUrl}/event/${eventId}/attendees`);
-//         setAttendees(response.data.attendees);
-//       } catch (error) {
-//         setError('Error fetching attendees.');
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
+  const fetchAttendees = async (page: number) => {
+    try {
+      const response = await axios.get(`${baseUrl}/event/${eventId}/attendees`, {
+        params: {
+          page,
+          limit: 10 
+        }
+      });
+      setAttendees(response.data.attendees);
+      setTotalPages(response.data.totalPages);
+      setCurrentPage(response.data.currentPage);
+    } catch (error) {
+      setError('Error fetching attendees.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-//     fetchAttendees();
-//   }, [eventId]);
+  useEffect(() => {
+    fetchAttendees(currentPage);
+  }, [eventId, currentPage]);
 
-//   if (loading) {
-//     return <div className="text-center mt-12">Loading...</div>;
-//   }
+  const handlePageChange = (page: number) => {
+    setLoading(true);
+    setCurrentPage(page);
+  };
 
-//   if (error) {
-//     return <div className="text-center text-red-600 mt-12">{error}</div>;
-//   }
+  if (loading) {
+    return <div className="text-center mt-12">Loading...</div>;
+  }
 
-return (
+  if (error) {
+    return <div className="text-center text-red-600 mt-12">{error}</div>;
+  }
+
+  return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
-      <Sidebar />
+      {eventId && <Sidebar eventId={eventId} />}
 
       {/* Main content area */}
       <div className="flex-1 p-6 overflow-y-auto">
         <h1 className="text-3xl font-semibold text-gray-800 mb-6">Attendees List</h1>
 
         {/* Attendees table */}
-        {attendees.length == 0 ? (
+        {attendees.length > 0 ? (
           <div className="overflow-x-auto rounded-lg shadow-lg">
             <table className="min-w-full bg-white rounded-lg shadow-md overflow-hidden">
               <thead>
                 <tr className="bg-gradient-to-r from-blue-500 to-blue-700 text-white uppercase text-sm leading-normal">
                   <th className="py-3 px-6 text-left">Name</th>
-                  <th className="py-3 px-6 text-left">Email</th>
+                  <th className="py-3 px-6 text-left">No: of Tickets</th>
                   <th className="py-3 px-6 text-right">Amount Paid</th>
                   <th className="py-3 px-6 text-right">Booking Date</th>
                 </tr>
@@ -67,9 +81,9 @@ return (
                         <span className="font-medium text-gray-800">{attendee.userName}</span>
                       </div>
                     </td>
-                    <td className="py-4 px-6 text-left text-gray-600">{attendee.email}</td>
+                    <td className="py-4 px-6 text-left text-gray-600">{attendee.quantity || 'N/A'}</td>
                     <td className="py-4 px-6 text-right text-green-500 font-semibold">
-                      ${attendee.amountPaid.toFixed(2)}
+                      ₹ {attendee.amountPaid.toFixed(2)}
                     </td>
                     <td className="py-4 px-6 text-right text-gray-500">
                       {new Date(attendee.bookingDate).toLocaleDateString()}
@@ -82,8 +96,30 @@ return (
         ) : (
           <div className="mt-12 text-center text-gray-500">No attendees found for this event.</div>
         )}
+
+        {/* Pagination controls */}
+        <div className="mt-6 flex justify-center">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-blue-500 text-white rounded-l-lg disabled:bg-gray-400"
+          >
+            Previous
+          </button>
+          <span className="px-4 py-2 bg-gray-200 text-gray-700">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 bg-blue-500 text-white rounded-r-lg disabled:bg-gray-400"
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );
 };
+
 export default AttendeesPage;

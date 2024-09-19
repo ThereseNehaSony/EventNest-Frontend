@@ -5,7 +5,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { baseUrl } from '../../config/constants';
-
+import { toast } from 'react-hot-toast';
 const stripePromise = loadStripe('pk_test_51PsiBmP7a8Dkcmab6SMs9jR9ua3Dh1HYZBEEjZwlPyk1e0hR6396zBpzBzrplG1VgZ7LbuAzHJp0FocsM4ri85OG003N8KC0jK');
 
 type TicketQuantities = {
@@ -47,6 +47,25 @@ const BookingSummary: React.FC = () => {
   const handlePaymentTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPaymentType(event.target.value);
   };
+  
+  const [ticketType, quantity] = Object.entries(ticketQuantities).find(([_, qty]) => qty > 0) || [null, null];
+console.log(ticketType,quantity)
+  
+  if (ticketType && quantity) {
+    const bookingPayload = {
+      userName: username,
+      userId:_id,
+      eventId,
+      ticketType,           
+      quantity,             
+      amountPaid: totalAmount, 
+      paymentType,
+      bookingDate: new Date(),
+    };
+  
+  
+    sessionStorage.setItem('bookingData', JSON.stringify(bookingPayload));
+  }
 
   const handleProceed = async () => {
     try {
@@ -66,56 +85,70 @@ const BookingSummary: React.FC = () => {
         const session = response.data;
         console.log('Stripe session:', session);
         const result = await stripe?.redirectToCheckout({ sessionId: session.id });
-        paymentSuccess = true;
-  console.log(result,"result...")
+        // paymentSuccess = true;
+        
         if (result?.error) {
           console.error(result.error.message);
           setPaymentStatus('failed');
         } else {
          
-          paymentSuccess = true;
+          // paymentSuccess = true;
         }
       } else if (paymentType === 'wallet') {
         const response = await axios.post(`${baseUrl}/user/wallet/payment`, {
           userName: username,
           totalAmount,
           userId: _id,
+         
+          eventId,
+          
+          ticketType,
+            quantity,
+            
+         
+          paymentType,
+          bookingDate: new Date(),
+
         });
 
         const paymentResult = response.data;
 
         if (paymentResult.success) {
           paymentSuccess = true;
+          navigate('/booking-success'); 
+          
         } else {
           setPaymentStatus('failed');
         }
       } else {
-        alert('Please select a valid payment method');
+       
+        toast.error('Please select a valid payment method');
       }
 
       if (paymentSuccess) {
         const bookingPayload = {
           userName: username,
           eventId,
-          tickets: Object.entries(ticketQuantities).map(([ticketType, quantity]) => ({
+          userId:_id,
             ticketType,
             quantity,
-            amountPaid: totalPrice / Object.values(ticketQuantities).reduce((acc, qty) => acc + qty, 0), 
-          })),
+            
           totalAmountPaid: totalAmount,
           paymentType,
           bookingDate: new Date(),
         };
+        console.log("paid.....",bookingPayload)
+        console.log(paymentSuccess,"succes....")
       
-        const saveBookingResponse = await axios.post(`${baseUrl}/event/booking/save`, bookingPayload);
-        const bookingResult = saveBookingResponse.data;
-
-        if (bookingResult.success) {
-          setPaymentStatus('success');
-          navigate('/booking-success'); 
-        } else {
-          setPaymentStatus('failed');
-        }
+       // const saveBookingResponse = await axios.post(`${baseUrl}/event/booking/save-booking`, bookingPayload);
+       // const bookingResult = saveBookingResponse.data;
+// console.log(bookingResult,"res...")
+        // if (bookingResult.success) {
+        //   setPaymentStatus('success');
+        //   navigate('/booking-success'); 
+        // } else {
+        //   setPaymentStatus('failed');
+        // }
       }
     } catch (error) {
       console.error('Error during proceed:', error);

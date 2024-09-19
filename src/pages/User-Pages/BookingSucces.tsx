@@ -14,3 +14,5 @@ const BookingSuccess: React.FC = () => {
 };
 
 export default BookingSuccess;
+
+

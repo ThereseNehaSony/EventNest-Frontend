@@ -94,6 +94,7 @@ const TicketDetail: React.FC = () => {
     cancellationPolicy,
     status,
     qrCodeValue,
+    type,
   } = ticketData;
 
   const parsedEventDate = new Date(eventDate);
@@ -108,7 +109,6 @@ const TicketDetail: React.FC = () => {
     minute: '2-digit',
     hour12: true,
   });
-
   return (
     <div className="flex">
       <Sidebar /> 
@@ -121,28 +121,43 @@ const TicketDetail: React.FC = () => {
               className="w-1/3 object-cover"
             />
             <div className="flex-1 p-4">
-              <p className="text-sm text-gray-500">
-                Use this ticket to enter the event.
-              </p>
               <h2 className="text-2xl font-bold mt-2">{eventName}</h2>
-              <p className="text-gray-700 mt-1">
-                Location: {location}
+              <p className="text-gray-700">
+                Location: {type === 'offline' ? location : 'Online'}
               </p>
               <p className="text-gray-700">
                 Date: {formattedEventDate} | Time: {formattedEventTime}
               </p>
               <p className="text-gray-700">
-               Ticket Status: <span className={status === 'cancelled' ? 'text-red-500' : 'text-green-500'}>{status}</span>
+                Ticket Status: <span className={status === 'cancelled' ? 'text-red-500' : 'text-green-500'}>{status}</span>
               </p>
-
-
             </div>
-            <div className="flex flex-col justify-center items-end p-4">
-              <p className="text-lg font-semibold">Quantity</p>
-              <p className="text-2xl font-bold text-green-600">{ticketType} : {quantity} X {amountPaid}</p>
-            </div>
-            
+            {type === 'offline' && (
+              <div className="flex flex-col justify-center items-end p-4">
+                <p className="text-lg font-semibold">Quantity</p>
+                <p className="text-2xl font-bold text-green-600">{ticketType} : {quantity} X {amountPaid}</p>
+              </div>
+            )}
+          
           </div>
+
+         
+          {type === 'online' && status !=="cancelled" && (
+            <div className="bg-blue-100 p-4">
+              <p className="text-gray-700 font-semibold">This is an online event.</p>
+              <p className="text-gray-600">The event link will be available 10 minutes before the start time.</p>
+              <p className="text-gray-600">You can access the event link from your profile or email confirmation.</p>
+            </div>
+          )}
+
+       
+          {type === 'offline' && status !=="cancelled" && (
+            <div className="bg-gray-100 p-4">
+              <p className="text-gray-700 font-semibold">This is an offline event.</p>
+              <p className="text-gray-600">Please bring your ticket to the venue for entry.</p>
+            </div>
+          )}
+
           <div className="flex justify-center p-4">
             {/* <QRCode value={qrCodeValue} size={128} /> */}
           </div>
@@ -162,7 +177,7 @@ const TicketDetail: React.FC = () => {
         </div>
       </div>
 
-      
+      {/* Cancel Ticket Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
@@ -189,5 +204,6 @@ const TicketDetail: React.FC = () => {
     </div>
   );
 };
+
 
 export default TicketDetail;

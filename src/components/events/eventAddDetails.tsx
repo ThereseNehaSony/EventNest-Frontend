@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 // import ReactQuill from 'react-quill';
 // import 'react-quill/dist/quill.snow.css'; 
-
+import MapComponent from '../common/map';
 
 
 const EventAddDetails: React.FC = () => {
@@ -15,14 +15,15 @@ const EventAddDetails: React.FC = () => {
   const [category, setCategory] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [image, setImage] = useState<File | null>(null);
-  const [location, setLocation] = useState<{ address1: string; address2: string; city: string; state: string; pincode: string; googleMapLink: string }>({
-    address1: '',
-    address2: '',
-    city: '',
-    state: '',
-    pincode: '',
-    googleMapLink: ''
-  });
+  // const [location, setLocation] = useState<{ address1: string; address2: string; city: string; state: string; pincode: string; googleMapLink: string }>({
+  //   address1: '',
+  //   address2: '',
+  //   city: '',
+  //   state: '',
+  //   pincode: '',
+  //   googleMapLink: ''
+  // });
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [entryType, setEntryType] = useState<string>('');
   const [ticketDetails, setTicketDetails] = useState<{ type: string; seats: number; price: number }[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -52,6 +53,9 @@ const EventAddDetails: React.FC = () => {
 
   const handleLocationModal = () => {
     setIsLocationModalOpen(!isLocationModalOpen);
+  };
+  const handleLocationSelect = (lat: number, lng: number) => {
+    setLocation({ lat, lng });
   };
 
   const handleTicketModal = (type: string) => {
@@ -84,16 +88,16 @@ const EventAddDetails: React.FC = () => {
       setSuccessMessage('Please fill all the fields');
     }
   }
-  const removeLocation = () => {
-    setLocation({
-      address1: '',
-      address2: '',
-      city: '',
-      state: '',
-      pincode: '',
-      googleMapLink: ''
-    });
-  };
+  // const removeLocation = () => {
+  //   setLocation({
+  //     address1: '',
+  //     address2: '',
+  //     city: '',
+  //     state: '',
+  //     pincode: '',
+  //     googleMapLink: ''
+  //   });
+  // };
   const removeTicketType = (index: number) => {
     setTicketDetails((prevTicketDetails) => 
       prevTicketDetails.filter((_, i) => i !== index)
@@ -141,7 +145,7 @@ const EventAddDetails: React.FC = () => {
       category,
       description,
       host: host, 
-      location,
+      location: location || { lat: 0, lng: 0 },
       entryType,
       ticketDetails,
       startDate: startDate?.toISOString() || '',
@@ -293,11 +297,13 @@ const EventAddDetails: React.FC = () => {
           )}
             
           {/* Display Location */}
-          {location.address1 && (
+          {/* {location.address1 && (
             <div className="mb-4">
               <h3 className="text-lg font-semibold text-gray-800 mb-2">Event Location</h3>
               <p>{location.address1}, {location.address2}</p>
               <p>{location.city}, {location.state}, {location.pincode}</p>
+               */}
+              
               {/* {location.googleMapLink && (
                  <p>
                    <a href={location.googleMapLink} target="_blank" rel="noopener noreferrer" className="text-blue-500">
@@ -305,14 +311,16 @@ const EventAddDetails: React.FC = () => {
                   </a>
                  </p>
               )} */}
-              <button
+
+
+              {/* <button
                 onClick={removeLocation}
                 className="text-red-500 hover:text-red-700 mt-2"
               >
                 Remove Location
               </button>
             </div>
-          )}
+          )} */}
 
           {/* Ticket Type */}
           {/* <div className="mb-4">
@@ -389,7 +397,7 @@ const EventAddDetails: React.FC = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
             <h3 className="text-lg font-semibold mb-4">Add Location</h3>
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label htmlFor="address1" className="block text-sm font-medium text-gray-700 mb-2">Address Line 1</label>
               <input
                 id="address1"
@@ -448,7 +456,8 @@ const EventAddDetails: React.FC = () => {
                 onChange={(e) => setLocation({ ...location, googleMapLink: e.target.value })}
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-            </div>
+            </div> */}
+             <MapComponent onLocationSelect={handleLocationSelect} />
             <div className="flex justify-end space-x-4">
               <button
                 onClick={handleLocationSave}

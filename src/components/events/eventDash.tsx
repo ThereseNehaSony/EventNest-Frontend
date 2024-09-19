@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import EventSidebar from '../sidebar/eventSidebar'; 
 import axios from 'axios'; 
@@ -11,6 +11,8 @@ interface SaleData {
 }
 
 interface Registration {
+  userName: ReactNode;
+  bookingDate: string | number | Date;
   name: string;
   email: string;
   date: string;
@@ -23,6 +25,7 @@ const EventPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [attendeesCount, setAttendeesCount] = useState<number>(0);
   const [totalAmountReceived, setTotalAmountReceived] = useState<number>(0);
+  const [recentRegistrations, setRecentRegistrations] = useState<[]>([]);
 
 
   useEffect(() => {
@@ -30,10 +33,11 @@ const EventPage: React.FC = () => {
       try {
         const response = await axios.get(`${baseUrl}/event/${eventId}`); 
         
-        const { event, attendeesCount, totalAmountReceived } = response.data;
+        const { event, attendeesCount, totalAmountReceived, recentRegistrations} = response.data;
           setEventDetails(event);
           setAttendeesCount(attendeesCount);
           setTotalAmountReceived(totalAmountReceived);
+          setRecentRegistrations(recentRegistrations)
        
       } catch (error) {
         setError('Error fetching event details.');
@@ -48,7 +52,7 @@ const EventPage: React.FC = () => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
-  const { status, totalPayments, salesData, recentRegistrations ,isPublished,rejectionReason} = eventDetails;
+  const { title,status, totalPayments ,isPublished,rejectionReason} = eventDetails;
 
   return (
     <div className="flex">
@@ -56,8 +60,9 @@ const EventPage: React.FC = () => {
 
     
       <main className="flex-1 p-6 bg-gray-100">
-    
+      <h1 className="text-3xl font-bold mb-6">{title}</h1>
 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
   <div className="bg-white rounded-lg shadow-md p-6">
     <h2 className="text-xl font-semibold mb-4">Approval Status</h2>
     <div className="flex items-center">
@@ -108,7 +113,7 @@ const EventPage: React.FC = () => {
           </div>
 
           
-          <div className="bg-white rounded-lg shadow-md p-6">
+          {/* <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold mb-4">Sales by Type</h2>
             <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
               <thead className="bg-gray-200">
@@ -126,30 +131,37 @@ const EventPage: React.FC = () => {
                 ))}
               </tbody>
             </table>
-          </div>
+          </div> */}
 
-          
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold mb-4">Recent Registrations</h2>
-            <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
-              <thead className="bg-gray-200">
-                <tr>
-                  <th className="py-2 px-4 border-b text-left">Name</th>
-                  <th className="py-2 px-4 border-b text-left">Email</th>
-                  <th className="py-2 px-4 border-b text-left">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentRegistrations?.map((registration: Registration, index: number) => (
-                  <tr key={index} className={`${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
-                    <td className="py-2 px-4 border-b">{registration.name}</td>
-                    <td className="py-2 px-4 border-b">{registration.email}</td>
-                    <td className="py-2 px-4 border-b">{registration.date}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+<div className="bg-white rounded-lg shadow-md p-6">
+  <h2 className="text-xl font-semibold mb-4">Recent Registrations</h2>
+  <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
+    <thead className="bg-gray-200">
+      <tr>
+        <th className="py-2 px-4 border-b text-left">Name</th>
+        {/* <th className="py-2 px-4 border-b text-left">Email</th> */}
+        <th className="py-2 px-4 border-b text-left">Date</th>
+      </tr>
+    </thead>
+    <tbody>
+  {recentRegistrations?.map((registration: Registration, index: number) => {
+    const formattedDate = new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }).format(new Date(registration.bookingDate));
+
+    return (
+      <tr key={index} className={`${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
+        <td className="py-2 px-4 border-b">{registration.userName}</td>
+        
+        <td className="py-2 px-4 border-b">{formattedDate}</td>
+      </tr>
+    );
+  })}
+</tbody>
+  </table>
+</div>
         </div>
       </main>
     </div>

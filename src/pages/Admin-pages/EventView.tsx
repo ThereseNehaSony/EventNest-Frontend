@@ -53,7 +53,7 @@ const EventView: React.FC = () => {
   }, [eventId]);
 
   if (!event) return <div>Loading...</div>;
-  const eventDate = new Date(event.startDate);
+  const eventDate = new Date(event.event.startDate);
   const formattedDate = eventDate.toLocaleDateString();
   const formattedTime = eventDate.toLocaleTimeString();
 
@@ -70,29 +70,29 @@ const EventView: React.FC = () => {
                 <div className="space-y-4">
                   <div>
                     <h3 className="text-lg font-semibold">Category:</h3>
-                    <p className="text-gray-600">{event.category}</p>
+                    <p className="text-gray-600">{event.event.category}</p>
                   </div>
 
                   <div>
                     <h3 className="text-lg font-semibold">Description:</h3>
-                    <p className="text-gray-600">{event.description}</p>
+                    <p className="text-gray-600">{event.event.description}</p>
                   </div>
 
                   <div>
                     <h3 className="text-lg font-semibold">Host:</h3>
-                    <p className="text-gray-600">{event.host}</p>
+                    <p className="text-gray-600">{event.event.host}</p>
                   </div>
 
                   <div>
                     <h3 className="text-lg font-semibold"> Type:</h3>
-                    <p className="text-gray-600">{event.type}</p>
+                    <p className="text-gray-600">{event.event.type}</p>
                   </div>
 
                   <div>
                     <h3 className="text-lg font-semibold">Ticket Types:</h3>
-                    {event.ticketDetails && event.ticketDetails.length > 0 ? (
+                    {event.event.ticketDetails && event.event.ticketDetails.length > 0 ? (
                       <ul className="list-disc pl-5 text-gray-600">
-                        {event.ticketDetails.map((ticket: any, index: number) => (
+                        {event.event.ticketDetails.map((ticket: any, index: number) => (
                           <li key={index} className="mb-2">
                             <p><strong>Type:</strong> {ticket.type}</p>
                             <p><strong>Seats Available:</strong> {ticket.numberOfSeats}</p>
@@ -131,7 +131,7 @@ const EventView: React.FC = () => {
                       <div>
                     <h3 className="text-lg font-semibold">Image:</h3>
                     <div className="flex space-x-4">
-                      <img src={event.image} alt={`Event ${event.title}`} className="w-35 h-35 object-cover rounded-lg" />
+                      <img src={event.event.image} alt={`Event ${event.event.title}`} className="w-35 h-35 object-cover rounded-lg" />
                     </div>
 
                   </div>
@@ -141,7 +141,7 @@ const EventView: React.FC = () => {
               </div>
 
               <div className="flex justify-end space-x-4 mt-6">
-                {!event.status || event.status === 'pending' ? (
+                {!event.event.status || event.event.status === 'pending' ? (
                   <>
                     <button
                       onClick={() => openModal('Approve')}
@@ -157,8 +157,8 @@ const EventView: React.FC = () => {
                     </button>
                   </>
                 ) : (
-                  <div className={`text-lg font-semibold ${event.status === 'approved' ? 'text-green-500' : 'text-red-500'}`}>
-                    {event.status === 'approved' ? 'Event Approved' : 'Event Rejected'}
+                  <div className={`text-lg font-semibold ${event.event.status === 'approved' ? 'text-green-500' : 'text-red-500'}`}>
+                    {event.event.status === 'approved' ? 'Event Approved' : 'Event Rejected'}
                   </div>
                 )}
               </div>
