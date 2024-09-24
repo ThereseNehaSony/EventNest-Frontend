@@ -54,7 +54,7 @@ const UpcomingEventsPage: React.FC = () => {
 
       <div className="flex-1 flex flex-col overflow-auto">
         <div className="flex-1 p-6">
-          <h1 className="text-3xl font-bold mb-6">Upcoming Events</h1>
+          <h1 className="text-3xl font-bold mb-6">Past Events</h1>
           {upcomingEvents.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {upcomingEvents.map((event) => (

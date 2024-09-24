@@ -59,6 +59,7 @@ import BookingSuccess from './pages/User-Pages/BookingSucces';
 import TicketDetails from './pages/User-Pages/TicketDetails';
 import AttendeesPage from './pages/Host-Pages/Attendees';
 import EventSearchResults from './pages/User-Pages/SearchResults';
+import CalendarPage from './components/common/calender';
 
 
 function App() {
@@ -120,6 +121,8 @@ function App() {
 
       <Routes>
         {/* Public routes */}
+
+        <Route path='/calender' element={<CalendarPage />} />
         <Route path="/" element={<UserHome />} />
         <Route path="/login" element={!user ? <UserLogin /> : <Navigate to="/" />} />
         <Route path="/signup" element={!user ? <UserSignup /> : <Navigate to="/" />} />

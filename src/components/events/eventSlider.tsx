@@ -69,12 +69,11 @@ const EventSlider: React.FC = () => {
     }
 
     setFilteredEvents(result);
-  }, [activeFilter, selectedCategory, events]); // Include selectedCategory
+  }, [activeFilter, selectedCategory, events]); 
 
   return (
     <div className="container mx-auto px-4 py-8">
       
-      {/* Filter Buttons */}
       <div className="flex space-x-4 mb-8">
         <button
           className={`px-4 py-2 border rounded-lg ${activeFilter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
@@ -113,7 +112,7 @@ const EventSlider: React.FC = () => {
           This Weekend
         </button>
       </div>
-{/* Category Filter Dropdown */}
+
 <div className="mb-4 flex items-center space-x-4">
   <p className="font-medium">Browse by category</p>
   <select
@@ -125,11 +124,11 @@ const EventSlider: React.FC = () => {
     <option value="music">Music</option>
     <option value="tech">Tech</option>
     <option value="sports">Sports</option>
-    {/* Add more categories as needed */}
+    
   </select>
 </div>
 
-      {/* Display Filtered Events */}
+
       {filteredEvents.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredEvents.map((event) => (

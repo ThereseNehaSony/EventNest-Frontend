@@ -55,11 +55,9 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import EventCard from '../../components/events/eventCard';
-
 import { baseUrl } from '../../config/constants';
 import { BsChevronDown } from 'react-icons/bs';
 
-// Event interface to match the event structure
 interface Event {
   _id: string;
   title?: string;
@@ -70,9 +68,15 @@ interface Event {
   price?: string;
 }
 
+interface Category {
+  _id: string;
+  name: string;
+}
+
 const EventSearchResults: React.FC = () => {
   const location = useLocation();
-  const [events, setEvents] = useState<Event[]>([]); // Explicitly typing events as an array of Event
+  const [events, setEvents] = useState<Event[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [filters, setFilters] = useState({
     category: '',
     startDate: '',
@@ -83,6 +87,19 @@ const EventSearchResults: React.FC = () => {
     startDate: true,
     priceRange: true,
   });
+
+  useEffect(() => {
+    // Fetch categories from backend
+   
+    axios.get(`${baseUrl}/event/show-categories`)
+    
+      .then(response => {
+        setCategories(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching categories', error);
+      });
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -109,10 +126,9 @@ const EventSearchResults: React.FC = () => {
   const toggleAccordion = (section: 'category' | 'startDate' | 'priceRange') => {
     setIsAccordionOpen((prevState) => ({
       ...prevState,
-      [section]: !prevState[section], // TypeScript now knows this is a valid key
+      [section]: !prevState[section],
     }));
   };
-  
 
   const filteredEvents = events.filter(event => {
     return (
@@ -130,7 +146,6 @@ const EventSearchResults: React.FC = () => {
         <aside className="w-1/4 p-4 bg-white rounded-lg shadow-md border border-gray-200">
           <h2 className="text-xl font-semibold mb-4 text-gray-700">Filters</h2>
 
-          {/* Category Filter */}
           <div className="mb-4">
             <div
               className="flex justify-between items-center cursor-pointer"
@@ -151,16 +166,15 @@ const EventSearchResults: React.FC = () => {
                 className="w-full mt-2 border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">All Categories</option>
-                <option value="Music">Music</option>
-                <option value="Technology">Technology</option>
-                <option value="Art">Art</option>
-                <option value="Sports">Sports</option>
-                <option value="Education">Education</option>
+                {categories?.map((category) => (
+                  <option key={category._id} value={category.name}>
+                    {category.name}
+                  </option>
+                ))}
               </select>
             )}
           </div>
 
-          {/* Start Date Filter */}
           <div className="mb-4">
             <div
               className="flex justify-between items-center cursor-pointer"

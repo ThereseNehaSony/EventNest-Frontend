@@ -13,15 +13,47 @@ const TicketDetail: React.FC = () => {
     canCancel: false,
     cancelMessage: '',
   });
+  const [address, setAddress] = useState<string | null>(null);
 
+  const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+
+  if (!apiKey) {
+    throw new Error('Google Maps API key is not defined in the environment variables.');
+  }
+
+  const fetchAddress = async (lat: number, lng: number) => {
+    try {
+      const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`);
+      const data = await response.json();
+      if (data.results && data.results.length > 0) {
+        setAddress(data.results[0].formatted_address);
+      } else {
+        setAddress("Address not found");
+      }
+    } catch (error) {
+      console.error('Error fetching address:', error);
+    }
+  };
+  
   useEffect(() => {
     const fetchTicketDetails = async () => {
       try {
+        // Fetching ticket details
         const response = await axios.get(`${baseUrl}/event/booking/${bookingId}`);
-        setTicketData(response.data.data);
-
+        const eventData = response.data.data;
       
-        checkCancellationEligibility(response.data.data.eventDate, response.data.data.status);
+        setTicketData(eventData);
+
+        // Checking cancellation eligibility (as per your function)
+        checkCancellationEligibility(eventData.eventDate, eventData.status);
+
+        // Fetch address based on latitude and longitude
+        if (eventData.location) {
+         
+          const { lat, lng } = eventData.location;
+        
+          fetchAddress(lat, lng);
+        }
       } catch (error) {
         console.error('Error fetching ticket details:', error);
       }
@@ -121,21 +153,21 @@ const TicketDetail: React.FC = () => {
               className="w-1/3 object-cover"
             />
             <div className="flex-1 p-4">
-              <h2 className="text-2xl font-bold mt-2">{eventName}</h2>
+              <h2 className="text-2xl font-bold mt-2">{eventName.toUpperCase()}</h2>
               <p className="text-gray-700">
-                Location: {type === 'offline' ? location : 'Online'}
+              <strong>Location:</strong> {type === 'offline' ? address : 'Online'}
               </p>
-              <p className="text-gray-700">
-                Date: {formattedEventDate} | Time: {formattedEventTime}
+              <p className="text-gray-700 mt-2">
+              <strong>Date:</strong> {formattedEventDate} | <strong>Time:</strong> {formattedEventTime}
               </p>
-              <p className="text-gray-700">
-                Ticket Status: <span className={status === 'cancelled' ? 'text-red-500' : 'text-green-500'}>{status}</span>
+              <p className="text-gray-700 mt-2">
+              <strong>Ticket Status:</strong> <span className={status === 'cancelled' ? 'text-red-500' : 'text-green-500'}>{status}</span>
               </p>
             </div>
             {type === 'offline' && (
               <div className="flex flex-col justify-center items-end p-4">
                 <p className="text-lg font-semibold">Quantity</p>
-                <p className="text-2xl font-bold text-green-600">{ticketType} : {quantity} X {amountPaid}</p>
+                <p className="text-2xl font-bold text-green-600">{ticketType.toUpperCase()} : {quantity} X {amountPaid}</p>
               </div>
             )}
           

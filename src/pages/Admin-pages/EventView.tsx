@@ -25,15 +25,20 @@ const EventView: React.FC = () => {
 
   const handleConfirm = () => {
     if (action && eventId) {
-      const endpoint = `${baseUrl}/event/${eventId}/${action.toLowerCase()}`;
+      const endpoint = `${baseUrl}/event/admin/${eventId}/${action.toLowerCase()}`;
       const data = action === 'Reject' ? { rejectionReason } : {};
   
       axios.post(endpoint, data)
         .then(response => {
           console.log(`${action} event confirmed. Response:`, response.data);
+          
+        
           setEvent((prevEvent: any) => ({
             ...prevEvent,
-            status: action === 'Approve' ? 'approved' : 'rejected',
+            event: {
+              ...prevEvent.event,
+              status: action === 'Approve' ? 'approved' : 'rejected',
+            },
           }));
         })
         .catch(error => {
@@ -42,6 +47,7 @@ const EventView: React.FC = () => {
     }
     closeModal();
   };
+  
   useEffect(() => {
     if (eventId) {
       axios.get(`${baseUrl}/event/${eventId}`)

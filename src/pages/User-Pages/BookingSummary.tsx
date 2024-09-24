@@ -22,6 +22,7 @@ const BookingSummary: React.FC = () => {
       totalPrice: number;
     }
   );
+  const eventDate = new Date(eventDateTime);
   const { username, _id } = useSelector((state: any) => state.user.user);
 
   const [paymentType, setPaymentType] = useState('');
@@ -137,9 +138,7 @@ console.log(ticketType,quantity)
           paymentType,
           bookingDate: new Date(),
         };
-        console.log("paid.....",bookingPayload)
-        console.log(paymentSuccess,"succes....")
-      
+        
        // const saveBookingResponse = await axios.post(`${baseUrl}/event/booking/save-booking`, bookingPayload);
        // const bookingResult = saveBookingResponse.data;
 // console.log(bookingResult,"res...")
@@ -173,8 +172,20 @@ console.log(ticketType,quantity)
 
         <div className="border-b border-gray-200 pb-4">
           <h3 className="text-lg font-semibold text-gray-800">Event Details</h3>
-          <p className="text-gray-600">{eventName}</p>
-          <p className="text-gray-500">{eventDateTime}</p>
+          <p className="text-gray-600">{eventName.toUpperCase()}</p>
+          <p className="text-gray-500">
+        {eventDate.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })}{' '}
+       
+        {eventDate.toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+        })}
+      </p>
+          
         </div>
 
         <div className="border-b border-gray-200 pb-4">

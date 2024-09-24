@@ -22,7 +22,7 @@ const PaymentSuccess: React.FC = () => {
 
   useEffect(() => {
     const verifyPayment = async () => {
-      console.log("Verifying payment...");
+     
       try {
       
         const verifyResponse = await axios.get(`${baseUrl}/payment/verify-payment/${sessionId}`);

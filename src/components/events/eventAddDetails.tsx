@@ -25,7 +25,7 @@ const EventAddDetails: React.FC = () => {
   // });
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [entryType, setEntryType] = useState<string>('');
-  const [ticketDetails, setTicketDetails] = useState<{ type: string; seats: number; price: number }[]>([]);
+  const [ticketDetails, setTicketDetails] = useState<{ type: string; seats: number; price: number ,ticketDescription:string}[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const eventState = useSelector((state: any) => state.admin.partialEventData);
@@ -39,6 +39,7 @@ const EventAddDetails: React.FC = () => {
   const [numberOfSeats, setNumberOfSeats] = useState<number>(0);
   const [price, setPrice] = useState<number>(0);
   const [ticketType, setTicketType] = useState<string>(''); 
+  const [ticketDescription, setTicketDescription] = useState<string>(''); 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
    
@@ -72,17 +73,18 @@ const EventAddDetails: React.FC = () => {
   };
 
   const handleFreeTicketSave = () => {
-    setTicketDetails([...ticketDetails, { type: 'Free', seats: numberOfSeats, price: 0 }]);
+    setTicketDetails([...ticketDetails, { type: 'Free', seats: numberOfSeats, price: 0 ,ticketDescription:ticketDescription}]);
     setNumberOfSeats(0);
     setIsFreeTicketModalOpen(false);
   };
 
   const handlePaidTicketSave = () => {
     if (ticketType && numberOfSeats > 0 && price > 0) {
-      setTicketDetails([...ticketDetails, { type: ticketType, seats: numberOfSeats, price }]);
+      setTicketDetails([...ticketDetails, { type: ticketType, seats: numberOfSeats, price ,ticketDescription:ticketDescription}]);
       setNumberOfSeats(0);
       setPrice(0);
       setTicketType('');
+      setTicketDescription('')
       setIsPaidTicketModalOpen(false);
     } else {
       setSuccessMessage('Please fill all the fields');
@@ -367,6 +369,7 @@ const EventAddDetails: React.FC = () => {
                 {ticketDetails.map((ticket, index) => (
                   <li key={index} className="flex justify-between mb-2">
                     <span>{ticket.type}</span>
+                    <span>{ticket.ticketDescription}</span>
                     <span>{ticket.seats} Seats - ₹{ticket.price}</span>
                     <button
                       onClick={() => removeTicketType(index)}
@@ -521,6 +524,16 @@ const EventAddDetails: React.FC = () => {
                 type="text"
                 value={ticketType}
                 onChange={(e) => setTicketType(e.target.value)}
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="ticketDescription" className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+              <input
+                id="ticketDescription"
+                type="text"
+                value={ticketDescription}
+                onChange={(e) => setTicketDescription(e.target.value)}
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>

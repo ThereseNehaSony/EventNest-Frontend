@@ -2,6 +2,11 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom'; 
 import { BsCalendar, BsCurrencyRupee } from 'react-icons/bs';
 
+interface TicketDetail {
+  type: string;
+  price: number; // Assuming price is a number
+  seats: number;
+}
 interface Event {
   _id: string;
   title?: string;
@@ -9,7 +14,7 @@ interface Event {
   host?: string;
   image?: string;
   startDate?: string;
-  price?: string;
+  ticketDetails?: TicketDetail[]; 
 }
 
 interface EventCardProps {
@@ -29,6 +34,11 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
     })
   : 'Date not available';
 
+  const lowestPrice = event.ticketDetails?.length 
+  ? event.ticketDetails.reduce((min, ticket) => {
+      return ticket.price < min ? ticket.price : min;
+    }, Infinity)
+  : undefined;
 
   return (
     <div
@@ -40,7 +50,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
         style={{ backgroundImage: `url(${event.image})` }}
       ></div>
       <div className="p-4">
-        <h3 className="text-lg font-semibold mb-2">{event.title}</h3>
+        <h3 className="text-lg font-semibold mb-2">{event.title?.toUpperCase()}</h3>
         <h3 className="text-sm ">{event.category}</h3>
         <p className="text-sm text-gray-600">Hosted By: {event.host}</p>
         <br />
@@ -50,7 +60,9 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
         </div>
         <div className="flex items-center text-sm text-gray-600 mb-2">
           <BsCurrencyRupee className="text-xl me-1" />
-          {/* From {event.price} */}
+            {lowestPrice !== undefined && lowestPrice !== Infinity 
+            ? `From ₹${lowestPrice} ` 
+            : 'Price not available'}
         </div>
       </div>
     </div>
