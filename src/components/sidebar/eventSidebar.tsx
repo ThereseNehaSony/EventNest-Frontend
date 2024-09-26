@@ -25,7 +25,7 @@ const EventSidebar: React.FC<EventSidebarProps> = ({ eventId }) => {
             <Link to={`/payments`} className="block py-2 px-4 hover:bg-gray-700">Payments</Link>
           </li>
           <li>
-            <Link to={`/cancel`} className="block py-2 px-4 hover:bg-gray-700">Cancel Event</Link>
+            <Link to={`/cancel-event/${eventId}`} className="block py-2 px-4 hover:bg-gray-700">Cancel Event</Link>
           </li>
         </ul>
       </div>

@@ -70,7 +70,7 @@ const BookingPage: React.FC = () => {
       const currentQuantity = ticketQuantities[type] || 0;
   
  
-      if (currentQuantity < selectedTicket.seats) {
+      if (currentQuantity < selectedTicket.availableSeats) {
         setTicketQuantities((prevQuantities) => ({
           ...prevQuantities,
           [type]: currentQuantity + 1,

@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { baseUrl } from '../../config/constants';
 import Sidebar from '../../components/sidebar/userSidebar'; 
+// import  QRCode  from 'qrcode.react';
 
 const TicketDetail: React.FC = () => {
   const { bookingId } = useParams<{ bookingId: string }>();
@@ -14,7 +15,7 @@ const TicketDetail: React.FC = () => {
     cancelMessage: '',
   });
   const [address, setAddress] = useState<string | null>(null);
-
+  const [qrCode, setQrCode] = useState('');
   const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
   if (!apiKey) {
@@ -41,7 +42,9 @@ const TicketDetail: React.FC = () => {
         // Fetching ticket details
         const response = await axios.get(`${baseUrl}/event/booking/${bookingId}`);
         const eventData = response.data.data;
-      
+        setQrCode(response.data.qrCode); 
+        console.log(qrCode);
+        
         setTicketData(eventData);
 
         // Checking cancellation eligibility (as per your function)
@@ -125,7 +128,7 @@ const TicketDetail: React.FC = () => {
     quantity,
     cancellationPolicy,
     status,
-    qrCodeValue,
+    // qrCode,
     type,
   } = ticketData;
 
@@ -191,7 +194,7 @@ const TicketDetail: React.FC = () => {
           )}
 
           <div className="flex justify-center p-4">
-            {/* <QRCode value={qrCodeValue} size={128} /> */}
+          {/* <QRCode value={qrCode} size={256} /> */}
           </div>
           <div className="bg-gray-100 p-4">
             <p className="text-gray-700">{cancellationPolicy}</p>

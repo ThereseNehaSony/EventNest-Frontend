@@ -15,14 +15,7 @@ const EventAddDetails: React.FC = () => {
   const [category, setCategory] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [image, setImage] = useState<File | null>(null);
-  // const [location, setLocation] = useState<{ address1: string; address2: string; city: string; state: string; pincode: string; googleMapLink: string }>({
-  //   address1: '',
-  //   address2: '',
-  //   city: '',
-  //   state: '',
-  //   pincode: '',
-  //   googleMapLink: ''
-  // });
+ 
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [entryType, setEntryType] = useState<string>('');
   const [ticketDetails, setTicketDetails] = useState<{ type: string; seats: number; price: number ,ticketDescription:string}[]>([]);
@@ -90,16 +83,7 @@ const EventAddDetails: React.FC = () => {
       setSuccessMessage('Please fill all the fields');
     }
   }
-  // const removeLocation = () => {
-  //   setLocation({
-  //     address1: '',
-  //     address2: '',
-  //     city: '',
-  //     state: '',
-  //     pincode: '',
-  //     googleMapLink: ''
-  //   });
-  // };
+ 
   const removeTicketType = (index: number) => {
     setTicketDetails((prevTicketDetails) => 
       prevTicketDetails.filter((_, i) => i !== index)
@@ -240,16 +224,37 @@ const EventAddDetails: React.FC = () => {
               rows={4}
             />
           </div>
+          <div className="mb-4">
+  <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
+    Event Image
+  </label>
+  <div className="flex flex-col">
+    <input
+      id="image"
+      type="file"
+      onChange={handleImageUpload}
+      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+    {image && (
+      <div className="relative mt-4">
+        <img
+          src={URL.createObjectURL(image)}
+          alt="Selected event"
+          className="w-full h-48 object-cover rounded-md"
+        />
+        <button
+          type="button"
+          onClick={() => setImage(null)} // Reset the image
+          className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 focus:outline-none hover:bg-red-600"
+        >
+          X
+        </button>
+      </div>
+    )}
+  </div>
+</div>
 
-          <div className=" flex mb-4">
-            <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">Event Image</label>
-            <input
-              id="image"
-              type="file"
-              onChange={handleImageUpload}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+
           {/* Event Start and End Date/Time */}
           <div className="flex mb-4 space-x-4">
             <div className="flex-1">
@@ -263,8 +268,7 @@ const EventAddDetails: React.FC = () => {
                 placeholderText="Select start date and time"
               />
             </div>
-            {/* Image Upload */}
-          
+           
             <div className="flex-1">
               <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-2">Event Ends</label>
               <DatePicker
@@ -383,9 +387,6 @@ const EventAddDetails: React.FC = () => {
             </div>
           )}
 
-
-
-          {/* Submit Button */}
           <button
             onClick={handleSubmit}
             className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
@@ -395,71 +396,11 @@ const EventAddDetails: React.FC = () => {
         </div>
       </div>
 
-      {/* Location Modal */}
+      
       {isLocationModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
             <h3 className="text-lg font-semibold mb-4">Add Location</h3>
-            {/* <div className="mb-4">
-              <label htmlFor="address1" className="block text-sm font-medium text-gray-700 mb-2">Address Line 1</label>
-              <input
-                id="address1"
-                type="text"
-                value={location.address1}
-                onChange={(e) => setLocation({ ...location, address1: e.target.value })}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="address2" className="block text-sm font-medium text-gray-700 mb-2">Address Line 2</label>
-              <input
-                id="address2"
-                type="text"
-                value={location.address2}
-                onChange={(e) => setLocation({ ...location, address2: e.target.value })}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">City</label>
-              <input
-                id="city"
-                type="text"
-                value={location.city}
-                onChange={(e) => setLocation({ ...location, city: e.target.value })}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-2">State</label>
-              <input
-                id="state"
-                type="text"
-                value={location.state}
-                onChange={(e) => setLocation({ ...location, state: e.target.value })}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="pincode" className="block text-sm font-medium text-gray-700 mb-2">Pincode</label>
-              <input
-                id="pincode"
-                type="text"
-                value={location.pincode}
-                onChange={(e) => setLocation({ ...location, pincode: e.target.value })}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="googleMapLink" className="block text-sm font-medium text-gray-700 mb-2">Google Maps Location</label>
-              <input
-                id="googleMapLink"
-                type="text"
-                value={location.googleMapLink}
-                onChange={(e) => setLocation({ ...location, googleMapLink: e.target.value })}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div> */}
              <MapComponent onLocationSelect={handleLocationSelect} />
             <div className="flex justify-end space-x-4">
               <button

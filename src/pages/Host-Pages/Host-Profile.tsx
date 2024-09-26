@@ -9,7 +9,7 @@ const HostProfile: React.FC = () => {
   const user = useSelector((state: IUserSelector) => state.user?.user);
   const id = useSelector((state: IUserSelector) => state.user?.user?._id);
   const data = useSelector((state: IHostSelector) => state.host?.userDetails);
-  const success = useSelector((state: any) => state.host.success); // Ensure you're accessing the correct state for success
+  const success = useSelector((state: any) => state.host.success);
 
   const [profileDetails, setProfileDetails] = useState({
     phone: '',
@@ -28,7 +28,6 @@ const HostProfile: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
-  // Update profile details when data changes
   useEffect(() => {
     if (data) {
       setProfileDetails({
@@ -95,104 +94,110 @@ const HostProfile: React.FC = () => {
   }, [success, dispatch]);
 
   return (
-    <div className="flex h-screen">
-      <main className="flex-1 p-6 bg-gray-100">
-        <div className="container mx-auto">
-          <div className="bg-white shadow rounded-lg p-4 md:p-8">
-            <h2 className="text-2xl font-semibold mb-4">Account Details</h2>
-            {showSuccessMessage && (
-              <div className="bg-green-100 text-green-800 p-2 mb-4 rounded">
-                Profile updated successfully!
-              </div>
-            )}
-            <form onSubmit={handleSubmit}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="name">
-                  User Name
-                </label>
-                <input
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  id="name"
-                  type="text"
-                  value={user?.username || ''}
-                  readOnly
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="email">
-                  Email Address
-                </label>
-                <input
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  id="email"
-                  type="email"
-                  value={user?.email || ''}
-                  readOnly
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="phone">
-                  Phone Number
-                </label>
-                <input
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  value={profileDetails.phone}
-                  onChange={handleChange}
-                />
-                {errors.phone && <p className="text-red-600 text-sm mt-1">{errors.phone}</p>}
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="address">
-                  Address
-                </label>
-                <input
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  id="address"
-                  name="address"
-                  type="text"
-                  value={profileDetails.address}
-                  onChange={handleChange}
-                />
-                {errors.address && <p className="text-red-600 text-sm mt-1">{errors.address}</p>}
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="aadharNumber">
-                  Aadhar Number
-                </label>
-                <input
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  id="aadharNumber"
-                  name="aadharNumber"
-                  type="text"
-                  value={profileDetails.aadharNumber}
-                  onChange={handleChange}
-                />
-                {errors.aadharNumber && <p className="text-red-600 text-sm mt-1">{errors.aadharNumber}</p>}
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="bankAccountNumber">
-                  Bank Account Number
-                </label>
-                <input
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  id="bankAccountNumber"
-                  name="bankAccountNumber"
-                  type="text"
-                  value={profileDetails.bankAccountNumber}
-                  onChange={handleChange}
-                />
-                {errors.bankAccountNumber && <p className="text-red-600 text-sm mt-1">{errors.bankAccountNumber}</p>}
-              </div>
-              <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" type="submit">
-                Save Changes
-              </button>
-            </form>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <div className="max-w-5xl w-full bg-white shadow-lg rounded-lg p-8">
+        <h2 className="text-3xl font-semibold text-gray-700 mb-6 text-center">Profile</h2>
+
+        {showSuccessMessage && (
+          <div className="bg-green-100 text-green-800 p-3 mb-6 rounded text-center">
+            Profile updated successfully!
           </div>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* User Information Card */}
+          <div className="p-6 bg-white border rounded-lg shadow">
+            <h3 className="text-lg font-semibold mb-4 text-gray-800">Account Information</h3>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">User Name</label>
+              <input
+                className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed"
+                type="text"
+                value={user?.username || ''}
+                readOnly
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+              <input
+                className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed"
+                type="email"
+                value={user?.email || ''}
+                readOnly
+              />
+            </div>
+          </div>
+
+          {/* Profile Details Form */}
+          <form onSubmit={handleSubmit} className="p-6 bg-white border rounded-lg shadow">
+            <h3 className="text-lg font-semibold mb-4 text-gray-800">Profile Details</h3>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="phone">
+                Phone Number
+              </label>
+              <input
+                className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                id="phone"
+                name="phone"
+                type="tel"
+                value={profileDetails.phone}
+                onChange={handleChange}
+              />
+              {errors.phone && <p className="text-red-600 text-sm mt-1">{errors.phone}</p>}
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="address">
+                Address
+              </label>
+              <input
+                className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                id="address"
+                name="address"
+                type="text"
+                value={profileDetails.address}
+                onChange={handleChange}
+              />
+              {errors.address && <p className="text-red-600 text-sm mt-1">{errors.address}</p>}
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="aadharNumber">
+                Aadhar Number
+              </label>
+              <input
+                className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                id="aadharNumber"
+                name="aadharNumber"
+                type="text"
+                value={profileDetails.aadharNumber}
+                onChange={handleChange}
+              />
+              {errors.aadharNumber && <p className="text-red-600 text-sm mt-1">{errors.aadharNumber}</p>}
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="bankAccountNumber">
+                Bank Account Number
+              </label>
+              <input
+                className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                id="bankAccountNumber"
+                name="bankAccountNumber"
+                type="text"
+                value={profileDetails.bankAccountNumber}
+                onChange={handleChange}
+              />
+              {errors.bankAccountNumber && <p className="text-red-600 text-sm mt-1">{errors.bankAccountNumber}</p>}
+            </div>
+
+            <button className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">
+              Save Changes
+            </button>
+          </form>
         </div>
-      </main>
+      </div>
     </div>
   );
 };

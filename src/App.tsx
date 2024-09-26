@@ -60,7 +60,7 @@ import TicketDetails from './pages/User-Pages/TicketDetails';
 import AttendeesPage from './pages/Host-Pages/Attendees';
 import EventSearchResults from './pages/User-Pages/SearchResults';
 import CalendarPage from './components/common/calender';
-
+import HostCancelEventPage from './pages/Host-Pages/CancelEvent';
 
 function App() {
   const { user, error } = useSelector((state: IUserSelector) => state.user);
@@ -123,6 +123,7 @@ function App() {
         {/* Public routes */}
 
         <Route path='/calender' element={<CalendarPage />} />
+        <Route path='/cancel-event/:eventId' element={<HostCancelEventPage />} />
         <Route path="/" element={<UserHome />} />
         <Route path="/login" element={!user ? <UserLogin /> : <Navigate to="/" />} />
         <Route path="/signup" element={!user ? <UserSignup /> : <Navigate to="/" />} />

@@ -73,7 +73,7 @@ const EventDetailPage: React.FC = () => {
 
     console.log("Ticket Details:", event.event.ticketDetails); // Log ticket details for debugging
 
-    return event.event.ticketDetails.some((ticket: any) => ticket.seats > 0);
+    return event.event.ticketDetails.some((ticket: any) => ticket.availableSeats > 0);
   };
 
   const isBookNowDisabled = !hasAvailableSeats();
@@ -134,7 +134,7 @@ const EventDetailPage: React.FC = () => {
               }
             };
 
-            const seatStatus = getSeatStatus(ticket.seats); // Assuming `seatsAvailable` is part of ticket data
+            const seatStatus = getSeatStatus(ticket.availableSeats); // Assuming `seatsAvailable` is part of ticket data
 
             return (
               <div

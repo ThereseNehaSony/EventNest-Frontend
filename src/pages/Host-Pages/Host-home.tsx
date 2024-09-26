@@ -1,5 +1,5 @@
-import React,{useEffect} from 'react';
-import { useSelector,useDispatch  } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { CiCircleCheck } from 'react-icons/ci';
 import { BiCheckShield, BiErrorCircle } from 'react-icons/bi';
 import { BsTag } from 'react-icons/bs';
@@ -7,12 +7,11 @@ import { useNavigate } from 'react-router-dom';
 import { BsCalendar, BsCurrencyRupee } from 'react-icons/bs';
 import { fetchEventsByHost } from '../../redux/actions/hostActions';
 import { AppDispatch } from '../../redux/store';
+
 const firstimage = '/bg-11.png';
 
-
-
 interface Event {
-  _id: string; 
+  _id: string;
   title: string;
   image: string;
   startDate: string;
@@ -24,30 +23,29 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
   const navigate = useNavigate();
 
   const handleCardClick = () => {
-    navigate(`/event-dashboard/${event._id}`); 
+    navigate(`/event-dashboard/${event._id}`);
   };
 
   return (
     <div
-      className="min-w-[300px] max-w-[300px] bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer"
-      onClick={handleCardClick} 
+      className="min-w-[300px] max-w-[300px] bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow"
+      onClick={handleCardClick}
     >
       <div
         className="h-48 bg-cover bg-center"
         style={{ backgroundImage: `url(${event.image})` }}
       ></div>
       <div className="p-4">
-        <h3 className="text-lg font-semibold mb-2">{event.title}</h3>
-        <br />
+        <h3 className="text-lg font-semibold mb-2">{event.title.toUpperCase()}</h3>
         <div className="flex items-center text-sm text-gray-600 mb-2">
           <BsCalendar className="text-xl me-1" />
-          {event.startDate}
+          {new Date(event.startDate).toLocaleDateString()}
         </div>
         <div className="flex items-center text-sm text-gray-600 mb-2">
           {event.entryType === 'Paid' ? (
             <>
               <BsCurrencyRupee className="text-xl me-1" />
-              {/* From {event.ticketDetails[0].price} */}
+              {event.entryType}
             </>
           ) : (
             <>
@@ -61,14 +59,10 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
   );
 };
 
-// export default EventCard;
-
 const HostHome = () => {
-  const hostStatus = useSelector((state: any) => state.host?.userDetails?.status); 
-  
-  
+  const hostStatus = useSelector((state: any) => state.host?.userDetails?.status);
   const hostName = useSelector((state: any) => state.host?.userDetails?.username);
-  const events = useSelector((state: any) => state.host.events); 
+  const events = useSelector((state: any) => state.host.events);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
@@ -80,19 +74,22 @@ const HostHome = () => {
     navigate('/add-event');
   };
 
-  
   useEffect(() => {
     if (hostName) {
       dispatch(fetchEventsByHost(hostName));
     }
   }, [dispatch, hostName]);
 
+  // Separate upcoming and past events
+  const currentDate = new Date();
+  const upcomingEvents = events.filter((event: any) => new Date(event.startDate) >= currentDate);
+  const pastEvents = events.filter((event: any) => new Date(event.startDate) < currentDate);
+
   return (
     <div>
       <section id="hero" className="hero bg-teal-800 py-20">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            
             <div className="order-2 lg:order-1 flex flex-col justify-center">
               <h2 className="text-3xl lg:text-4xl font-bold mb-4">
                 <span className='text-white ml-1'>HOST WITH EASE </span>
@@ -102,8 +99,6 @@ const HostHome = () => {
                 <span className="text-red-400 ml-11"> REGISTER NOW</span>
               </h2>
             </div>
-
-          
             <div className="order-1 lg:order-2">
               <img
                 src={firstimage}
@@ -148,12 +143,25 @@ const HostHome = () => {
       <section className="mt-10 p-6 container mx-auto">
         <h2 className="text-2xl font-bold mb-6">Upcoming Events</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {events && events.length > 0 ? (
-            events.map((event: any, index: number) => (
+          {upcomingEvents && upcomingEvents.length > 0 ? (
+            upcomingEvents.map((event: any, index: number) => (
               <EventCard key={index} event={event} />
             ))
           ) : (
-            <p>No events available. Start by adding a new event.</p>
+            <p>No upcoming events. Start by adding a new event.</p>
+          )}
+        </div>
+      </section>
+
+      <section className="mt-10 p-6 container mx-auto">
+        <h2 className="text-2xl font-bold mb-6">Past Events</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {pastEvents && pastEvents.length > 0 ? (
+            pastEvents.map((event: any, index: number) => (
+              <EventCard key={index} event={event} />
+            ))
+          ) : (
+            <p>No past events found.</p>
           )}
         </div>
       </section>

@@ -40,7 +40,27 @@ const EventDetailsPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [status,setStatus] = useState<string | null>(null )
+  const [address, setAddress] = useState<string | null>(null);
 
+  const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+
+  if (!apiKey) {
+    throw new Error('Google Maps API key is not defined in the environment variables.');
+  }
+
+  const fetchAddress = async (lat: number, lng: number) => {
+    try {
+      const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`);
+      const data = await response.json();
+      if (data.results && data.results.length > 0) {
+        setAddress(data.results[0].formatted_address);
+      } else {
+        setAddress("Address not found");
+      }
+    } catch (error) {
+      console.error('Error fetching address:', error);
+    }
+  };
 
   useEffect(() => {
     const fetchEventDetails = async () => {
@@ -61,6 +81,10 @@ const EventDetailsPage: React.FC = () => {
         setIsApproved(data.event.isApproved);
         setIsPublished(data.event.isPublished);
         setStatus(data.event.status)
+
+        if (data.event.location && data.event.location.lat && data.event.location.lng) {
+          fetchAddress(data.event.location.lat, data.event.location.lng);
+        }
 
         console.log(data,"dataa....")
       } catch (error) {
@@ -168,7 +192,7 @@ const EventDetailsPage: React.FC = () => {
             <input
               id="eventName"
               type="text"
-              value={eventName}
+              value={eventName.toUpperCase()}
               onChange={(e) => setEventName(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter the event name"
@@ -191,25 +215,16 @@ const EventDetailsPage: React.FC = () => {
 
           {eventType === 'offline' && location && (
             <div className="mb-6 bg-gray-50 p-4 border border-gray-200 rounded-lg shadow-sm">
-              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+
               <div className="space-y-2">
-                <p className="text-gray-700"><span className="font-medium">Address:</span> {location.address1}</p>
-                {location.address2 && (
-                  <p className="text-gray-700"><span className="font-medium">Address Line 2:</span> {location.address2}</p>
-                )}
-                <p className="text-gray-700"><span className="font-medium">City:</span> {location.city}</p>
-                <p className="text-gray-700"><span className="font-medium">State:</span> {location.state}</p>
-                <p className="text-gray-700"><span className="font-medium">Pincode:</span> {location.pincode}</p>
-                {/* {location.googleMapsLocation && (
-                  <a
-                    href={location.googleMapsLocation}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline mt-2 inline-block"
-                  >
-                    View on Google Maps
-                  </a>
-                )} */}
+               
+                
+                 {address && (
+                <div className="bg-gray-100 p-6 rounded-lg shadow-md mb-4">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-2">Address:</h3>
+                  <p className="mt-4 text-gray-700"> {address}</p>
+                </div>
+              )}
               </div>
             </div>
           )}
@@ -247,7 +262,7 @@ const EventDetailsPage: React.FC = () => {
               ticketTypes.map((ticket, index) => (
                 <div key={index} className="flex items-center justify-between mb-3 p-4 bg-gray-50 border border-gray-200 rounded-lg shadow-sm">
                   <p className="text-gray-700">
-                    {ticket.type} - {ticket.seats} seats @ ${ticket.price}
+                    {ticket.type.toUpperCase()} - {ticket.seats} seats @ ₹{ticket.price}
                   </p>
                   {/* {status === 'pending' && !isPublished && (
                     <button
